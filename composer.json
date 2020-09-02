@@ -1,0 +1,21 @@
+{
+    "name": "nawarian/dumm",
+    "description": "DOOM 1 ported to PHP with ext/raylib",
+    "type": "project",
+    "license": "GPL-3-or-later",
+    "authors": [
+        {
+            "name": "Nawarian",
+            "email": "nickolas@phpsp.org.br"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "mdurrant/php-binary-reader": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nawarian\\Dumm\\": "src/"
+        }
+    }
+}
