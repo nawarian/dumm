@@ -162,8 +162,8 @@ class WAD
                 $this->reader->readInt16(), // x1
 
                 // Right, Left child IDs
-                $this->reader->readUint16(),
-                $this->reader->readUint16(),
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
             ];
         }
 

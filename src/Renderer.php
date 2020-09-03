@@ -26,6 +26,8 @@ class Renderer
 
     private int $scaleFactor = 15;
 
+    private array $nodes = [];
+
     public function __construct(int $screenWidth, int $screenHeight, Map $map)
     {
         $this->screenWidth = --$screenWidth;
@@ -73,41 +75,45 @@ class Renderer
             new Color(255, 0, 0, 255),
         );
 
-        $nodes = $this->map->nodes();
-        $rootNode = array_pop($nodes);
+        $this->nodes = $this->map->nodes();
+        // the last node is the root node
+        $this->renderBSPNodes(count($this->nodes) - 1);
+    }
 
-        list(
-            $xPartition,
-            $yPartition,
-            $xChangePartition,
-            $yChangePartition,
+    private function renderBSPNodes(int $nodeId): void
+    {
+        // If that's a subsector, render the subsector instead
+        if ($nodeId & 0x8000) {
+            // "Convert" this int into int(16)
+            $nodeId &= 0xFFFF;
 
-            $rightRectY0,
-            $rightRectY1,
-            $rightRectX0,
-            $rightRectX1,
+            // Get the subSectorId bit only
+            $nodeId &= ~0x8000;
 
-            $leftRectY0,
-            $leftRectY1,
-            $leftRectX0,
-            $leftRectX1,
-        ) = $rootNode;
+            $this->renderSubSector($nodeId);
+            return;
+        }
 
-        Draw::rectangleLines(
-            $this->remapXToScreen($rightRectX0),
-            $this->remapYToScreen($rightRectY0),
-            $this->remapXToScreen($rightRectX1),
-            $this->remapYToScreen($rightRectY1),
-            new Color(0, 255, 0, 255),
-        );
+        list($xPartition, $yPartition, $changeXPartition, $changeYPartition) = $this->nodes[$nodeId];
+        $dx = $this->player->x - $xPartition;
+        $dy = $this->player->y - $yPartition;
 
-        Draw::rectangleLines(
-            $this->remapXToScreen($leftRectX0),
-            $this->remapYToScreen($leftRectY0),
-            $this->remapXToScreen($leftRectX1),
-            $this->remapYToScreen($leftRectY1),
-            new Color(255, 0, 0, 255),
-        );
+        $isOnLeftSide = (
+            ($dx * $changeYPartition) - ($dy * $changeXPartition)
+        ) <= 0;
+
+        if (true === $isOnLeftSide) {
+            $this->renderBSPNodes($this->nodes[$nodeId][13]);
+            $this->renderBSPNodes($this->nodes[$nodeId][12]);
+        } else {
+            $this->renderBSPNodes($this->nodes[$nodeId][12]);
+            $this->renderBSPNodes($this->nodes[$nodeId][13]);
+        }
+    }
+
+    private function renderSubSector(int $subSectorId): void
+    {
+        // @todo
     }
 
     private function remapXToScreen(int $xMapPosition): int
