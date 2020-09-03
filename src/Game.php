@@ -38,7 +38,7 @@ class Game
     private function switchGameMap(string $identifier): void
     {
         $this->state->setMap($identifier);
-        $this->renderer = new Renderer($this->state->map);
+        $this->renderer = new Renderer(320, 200, $this->state->map);
     }
 
     private function update(): void

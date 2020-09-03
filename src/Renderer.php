@@ -14,6 +14,10 @@ use raylib\{
 
 class Renderer
 {
+    public int $screenWidth;
+
+    public int $screenHeight;
+
     public Map $map;
 
     private array $mapEdges;
@@ -22,8 +26,10 @@ class Renderer
 
     private int $scaleFactor = 15;
 
-    public function __construct(Map $map)
+    public function __construct(int $screenWidth, int $screenHeight, Map $map)
     {
+        $this->screenWidth = --$screenWidth;
+        $this->screenHeight = --$screenHeight;
         $this->map = $map;
         $this->mapEdges = $map->fetchMapEdges();
         $this->player = $map->fetchPlayer(1);
@@ -79,7 +85,7 @@ class Renderer
     {
         list(, $yMin) = $this->mapEdges[0]; 
 
-        return (int) (($yMapPosition + (-$yMin)) / $this->scaleFactor);
+        return (int) ($this->screenHeight - ($yMapPosition + (-$yMin)) / $this->scaleFactor);
     }
 
     private function renderScene(): void
