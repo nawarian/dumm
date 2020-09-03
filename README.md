@@ -17,6 +17,9 @@ Make sure you've placed `DOOM1.wad` and `raylib.so` in the root path.
 $ ./doom
 ```
 
+# Current State
+![Rendering automap + root node](current-state.png)
+
 # Roadmap
 
 - [x] Read WAD file
