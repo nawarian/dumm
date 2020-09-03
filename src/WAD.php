@@ -61,5 +61,56 @@ class WAD
 
         return new Map($offset, $this);
     }
+
+    public function fetchVertices(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $vertexLumpSizeInBytes = 2 * 2;
+        $vertices = [];
+        for ($i = 0; $i < $size / $vertexLumpSizeInBytes; ++$i) {
+            $vertices[$i] = [
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+            ];
+        }
+
+        return $vertices;
+    }
+
+    public function fetchLinedefs(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $lineDefLumpSizeInBytes = 2 * 7;
+        $linedefs = [];
+        for ($i = 0; $i < $size / $lineDefLumpSizeInBytes; ++$i) {
+            $linedefs[$i] = [
+                $this->reader->readUint16(), // start vertex
+                $this->reader->readUint16(), // end vertex
+                $this->reader->readUint16(), // flags
+                $this->reader->readUint16(), // line type / action
+                $this->reader->readUint16(), // sector tag
+                $this->reader->readUint16(), // right sidedef (0xFFFF side not present)
+                $this->reader->readUint16(), // left sidedef (0xFFFF side not present)
+            ];
+        }
+
+        /**
+         * Linedef Flags
+         * 0 = block players and monsters
+         * 1 = block monsters
+         * 2 = two sided
+         * 3 = upper texture is unpegged
+         * 4 = lower texture is unpegged
+         * 5 = secret (one-sided on automap)
+         * 6 = blocks sound
+         * 7 = never shows on automap
+         * 8 = always shows on automap
+         */
+        return $linedefs;
+    }
 }
 

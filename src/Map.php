@@ -53,35 +53,9 @@ class Map
             return $this->cache['linedefs'];
         }
 
-        list(, $offset, $size) = $this->lumps[self::LINEDEFS_OFFSET];
-
-        $this->wad->reader->setPosition($offset);
-        $lineDefLumpSizeInBytes = 2 * 7;
-        $linedefs = [];
-        for ($i = 0; $i < $size / $lineDefLumpSizeInBytes; ++$i) {
-            $linedefs[$i] = [
-                $this->wad->reader->readUint16(), // start vertex
-                $this->wad->reader->readUint16(), // end vertex
-                $this->wad->reader->readUint16(), // flags
-                $this->wad->reader->readUint16(), // line type / action
-                $this->wad->reader->readUint16(), // sector tag
-                $this->wad->reader->readUint16(), // right sidedef (0xFFFF side not present)
-                $this->wad->reader->readUint16(), // left sidedef (0xFFFF side not present)
-            ];
-        }
-
-        /**
-         * Linedef Flags
-         * 0 = block players and monsters
-         * 1 = block monsters
-         * 2 = two sided
-         * 3 = upper texture is unpegged
-         * 4 = lower texture is unpegged
-         * 5 = secret (one-sided on automap)
-         * 6 = blocks sound
-         * 7 = never shows on automap
-         * 8 = always shows on automap
-         */
+        $linedefs = $this->wad->fetchLinedefs(
+            $this->lumps[self::LINEDEFS_OFFSET],
+        );
 
         $this->cache['linedefs'] = $linedefs;
         return $linedefs;
@@ -101,17 +75,9 @@ class Map
             return $this->cache['vertices'];
         }
 
-        list(, $offset, $size) = $this->lumps[self::VERTICES_OFFSET];
-
-        $this->wad->reader->setPosition($offset);
-        $vertexLumpSizeInBytes = 2 * 2;
-        $vertices = [];
-        for ($i = 0; $i < $size / $vertexLumpSizeInBytes; ++$i) {
-            $vertices[$i] = [
-                $this->wad->reader->readInt16(),
-                $this->wad->reader->readInt16(),
-            ];
-        }
+        $vertices = $this->wad->fetchVertices(
+            $this->lumps[self::VERTICES_OFFSET],
+        );
 
         $this->cache['vertices'] = $vertices;
         return $vertices; 
