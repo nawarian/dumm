@@ -17,3 +17,15 @@ Make sure you've placed `DOOM1.wad` and `raylib.so` in the root path.
 $ ./doom
 ```
 
+# Roadmap
+
+- [x] Read WAD file
+- [x] Render automap
+- [ ] Traverse BSP tree
+- [ ] Render scene lines
+- [ ] Render scene rectangles
+- [ ] Add perspective
+- [ ] Draw floor and ceiling
+- [ ] Draw textures
+- [ ] Move around
+
