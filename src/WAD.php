@@ -132,5 +132,42 @@ class WAD
          */
         return $linedefs;
     }
+
+    public function fetchNodes(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $nodesLumpSizeInBytes = 14 * 2;
+        $nodes = [];
+        for ($i = 0; $i < $size / $nodesLumpSizeInBytes; ++$i) {
+            $nodes[$i] = [
+                // X, Y partition
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+                // Change X, Y partition
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+
+                // Right Rect
+                $this->reader->readInt16(), // y0
+                $this->reader->readInt16(), // y1
+                $this->reader->readInt16(), // x0
+                $this->reader->readInt16(), // x1
+
+                // Left Rect
+                $this->reader->readInt16(), // y0
+                $this->reader->readInt16(), // y1
+                $this->reader->readInt16(), // x0
+                $this->reader->readInt16(), // x1
+
+                // Right, Left child IDs
+                $this->reader->readUint16(),
+                $this->reader->readUint16(),
+            ];
+        }
+
+        return $nodes;
+    }
 }
 

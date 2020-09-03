@@ -136,12 +136,18 @@ class Map
         return [];
     }
 
-    public function nodes(): iterable
+    public function nodes(): array 
     {
-        $nodes = $this->lumps[self::NODES_OFFSET];
+        if (isset($this->cache['nodes'])) {
+            return $this->cache['nodes'];
+        }
 
-        // @todo
-        return [];
+        $nodes = $this->wad->fetchNodes(
+            $this->lumps[self::NODES_OFFSET],
+        );
+
+        $this->cache['nodes'] = $nodes;
+        return $nodes; 
     }
 
     public function sectors(): iterable

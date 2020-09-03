@@ -72,6 +72,42 @@ class Renderer
             1,
             new Color(255, 0, 0, 255),
         );
+
+        $nodes = $this->map->nodes();
+        $rootNode = array_pop($nodes);
+
+        list(
+            $xPartition,
+            $yPartition,
+            $xChangePartition,
+            $yChangePartition,
+
+            $rightRectY0,
+            $rightRectY1,
+            $rightRectX0,
+            $rightRectX1,
+
+            $leftRectY0,
+            $leftRectY1,
+            $leftRectX0,
+            $leftRectX1,
+        ) = $rootNode;
+
+        Draw::rectangleLines(
+            $this->remapXToScreen($rightRectX0),
+            $this->remapYToScreen($rightRectY0),
+            $this->remapXToScreen($rightRectX1),
+            $this->remapYToScreen($rightRectY1),
+            new Color(0, 255, 0, 255),
+        );
+
+        Draw::rectangleLines(
+            $this->remapXToScreen($leftRectX0),
+            $this->remapYToScreen($leftRectY0),
+            $this->remapXToScreen($leftRectX1),
+            $this->remapYToScreen($leftRectY1),
+            new Color(255, 0, 0, 255),
+        );
     }
 
     private function remapXToScreen(int $xMapPosition): int
