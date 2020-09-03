@@ -36,13 +36,32 @@ class Map
         return [];
     }
 
-    public function fetchPlayer(int $number): object
+    public function fetchPlayer(int $number): Player 
     {
-        // @todo
-        $player = new stdClass();
-        $player->number = 1;
-        $player->x = 0;
-        $player->y = 0;
+        if (isset($this->cache["player-{$number}"])) {
+            return $this->cache["player-{$number}"];
+        }
+
+        $things = $this->wad->fetchThings(
+            $this->lumps[self::THINGS_OFFSET]
+        );
+
+        foreach ($things as $thing) {
+            list (
+                $x,
+                $y,
+                $angle,
+                $type,
+                $flags
+            ) = $thing;
+
+            if ($number === $type) {
+                break;
+            }
+        }
+
+        $player = new Player(...$thing);
+        $this->cache["player-{$number}"] = $player;
 
         return $player;
     }

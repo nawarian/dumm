@@ -62,6 +62,26 @@ class WAD
         return new Map($offset, $this);
     }
 
+    public function fetchThings(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $thingsLumpSizeInBytes = 2 * 5;
+        $things = [];
+        for ($i = 0; $i < $size / $thingsLumpSizeInBytes; ++$i) {
+            $things[$i] = [
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+                $this->reader->readUint16(),
+                $this->reader->readUint16(),
+                $this->reader->readUint16(),
+            ];
+        }
+
+        return $things;
+    }
+
     public function fetchVertices(array $lump): array
     {
         list(, $offset, $size) = $lump;

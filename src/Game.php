@@ -63,6 +63,14 @@ class Game
             );
         }
 
+        $player = $this->state->map->fetchPlayer(1);
+        Draw::circle(
+            (int) (($player->x + $xShift) / $scaleFactor),
+            (int) (($player->y + $yShift) / $scaleFactor),
+            1,
+            new Color(255, 0, 0, 255),
+        );
+
         Draw::end();
     }
 }
