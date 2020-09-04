@@ -18,7 +18,7 @@ $ ./doom
 ```
 
 # Current State
-![Rendering automap + root node](current-state.png)
+![Rendering automap + root node](current-state.gif)
 
 # Roadmap
 
