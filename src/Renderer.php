@@ -24,6 +24,11 @@ class Renderer
 
     private array $nodes = [];
 
+    private array $flags = [
+        'showAutomap' => false,
+        'showDebugInformation' => false,
+    ];
+
     public function __construct(Map $map)
     {
         $this->map = $map;
@@ -37,16 +42,26 @@ class Renderer
         $this->mapHeight = abs($yMax - $yMin);
     }
 
+    public function toggleAutomap(): void
+    {
+        $this->flags['showAutomap'] = !$this->flags['showAutomap'];
+    }
+
+    public function toggleDebug(): void
+    {
+        $this->flags['showDebugInformation'] = !$this->flags['showDebugInformation'];
+    }
+
     public function render(): void
     {
         Draw::begin();
 
         Draw::clearBackground(new Color(0, 0, 0, 255));
 
-        $this->renderAutomap();
-        $this->renderScene();
+        $this->flags['showAutomap'] && $this->renderAutomap();
+        !$this->flags['showAutomap'] && $this->renderScene();
 
-        $this->renderDebugInfo();
+        $this->flags['showDebugInformation'] && $this->renderDebugInfo();
 
         Draw::end();
     }
@@ -165,7 +180,24 @@ class Renderer
 
     private function renderDebugInfo(): void
     {
+        $green = new Color(0, 255, 0, 255);
         Text::drawFPS(0, 0);
+
+        $playerPosition = sprintf(
+            'Coords: (%d, %d) | Angle: %03d',
+            $this->player->x,
+            $this->player->y,
+            $this->player->angle,
+        );
+        $playerPositionSize = Text::measure($playerPosition, 12);
+
+        Text::draw(
+            $playerPosition,
+            0,
+            Game::SCREEN_HEIGHT - 12,
+            12,
+            $green,
+        );
     }
 }
 

@@ -50,6 +50,14 @@ class Game
 
     private function update(): void
     {
+        if (Key::isPressed(Key::TAB)) {
+            $this->renderer->toggleAutomap();
+        }
+
+        if (Key::isPressed(Key::BACKSPACE)) {
+            $this->renderer->toggleDebug();
+        }
+
         if (Key::isDown(Key::RIGHT)) {
             $this->state->player->rotateRight();
         }
