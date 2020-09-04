@@ -14,8 +14,8 @@ use raylib\{
 
 class Game
 {
-    public const SCREEN_WIDTH = 320 * 3;
-    public const SCREEN_HEIGHT = 200 * 3;
+    public const SCREEN_WIDTH = 320 * 3.5;
+    public const SCREEN_HEIGHT = 200 * 3.5;
 
     public const VIRTUAL_WIDTH = 320;
     public const VIRTUAL_HEIGHT = 200;
@@ -32,7 +32,7 @@ class Game
 
     public function start(): void
     {
-        Window::init(self::SCREEN_WIDTH, self::SCREEN_HEIGHT, 'DUMM - PHP DOOM');
+        Window::init((int) self::SCREEN_WIDTH, (int) self::SCREEN_HEIGHT, 'DUMM - PHP DOOM');
         Timming::setTargetFPS(60);
         $this->switchGameMap('E1M1');
 

@@ -28,9 +28,9 @@ class Player extends Thing
         }
 
         $v1Angle = normalize360($v1Angle - $this->angle);
-        $v2Angle = normalize360($this->angle);
+        $v2Angle = normalize360($v2Angle - $this->angle);
         $halfFOV = $this->fov / 2;
-        
+
         $v1Moved = $v1Angle + $halfFOV;
         if ($v1Moved > $this->fov) {
             $v1MovedAngle = $v1Moved - $this->fov;
@@ -48,8 +48,8 @@ class Player extends Thing
             $v2Angle = -$halfFOV;
         }
 
-        $v1Angle = normalize360($v1Angle + 90);
-        $v2Angle = normalize360($v2Angle + 90);
+        $v1Angle += 90;
+        $v2Angle += 90;
 
         return true;
     }

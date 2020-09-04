@@ -113,7 +113,14 @@ class Renderer
             list(
                 $vertexStart,
                 $vertexEnd,
+                ,
+                ,
+                $direction,
             ) = $this->map->segments()[$segmentId + $i];
+
+            if ($direction === 1) {
+                continue;
+            }
 
             $v1 = $this->map->vertices()[$vertexStart];
             $v2 = $this->map->vertices()[$vertexEnd];
@@ -152,12 +159,14 @@ class Renderer
         }
 
         $red = new Color(255, 0, 0, 255);
+        $orange = new Color(100, 100, 0, 255);
         foreach ($linesInFOV as $line) {
             list($v1, $v2, $v1Angle, $v2Angle) = $line;
             list($x0, $y0) = $v1;
             list($x1, $y1) = $v2;
 
             if ($this->flags['showAutomap']) {
+                // Render segments 
                 Draw::line(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
@@ -165,8 +174,30 @@ class Renderer
                     $this->remapYToScreen($y1),
                     $red,
                 );
+
+                // Draw sight lines
+                Draw::line(
+                    $this->remapXToScreen($this->player->x),
+                    $this->remapYToScreen($this->player->y),
+                    $this->remapXToScreen($x0),
+                    $this->remapYToScreen($y0),
+                    $orange,
+                );
+
+                Draw::line(
+                    $this->remapXToScreen($this->player->x),
+                    $this->remapYToScreen($this->player->y),
+                    $this->remapXToScreen($x1),
+                    $this->remapYToScreen($y1),
+                    $orange,
+                );
             } else {
-                // Render 3D scene
+                // Render 3D line
+                $v1XScreen = $this->angleToScreenX($v1Angle);
+                $v2XScreen = $this->angleToScreenX($v2Angle);
+
+                Draw::line($v1XScreen, 0, $v1XScreen, (int) Game::SCREEN_HEIGHT, $red);
+                Draw::line($v2XScreen, 0, $v2XScreen, (int) Game::SCREEN_HEIGHT, $red);
             }
         }
     }
@@ -190,6 +221,27 @@ class Renderer
         return (int) (Game::SCREEN_HEIGHT - ($yMapPosition + (-$yMin)) / $scaleFactor);
     }
 
+    private function angleToScreenX(float $angle): int
+    {
+        $halfScreenAngle = 90;
+        $fullScreenAngle = 180;
+        $halfScreenWidth = Game::SCREEN_WIDTH / 2;
+
+        // Left side
+        if ($angle > $halfScreenAngle) {
+            $angle -= $halfScreenAngle;
+            return (int) ($halfScreenWidth - round(
+                $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
+            ));
+        }
+
+        // Right side
+        $angle = $halfScreenAngle - $angle;
+        return (int) ($halfScreenWidth + round(
+            $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
+        ));
+    }
+
     private function renderDebugInfo(): void
     {
         $green = new Color(0, 255, 0, 255);
@@ -201,12 +253,11 @@ class Renderer
             $this->player->y,
             $this->player->angle,
         );
-        $playerPositionSize = Text::measure($playerPosition, 12);
 
         Text::draw(
             $playerPosition,
             0,
-            Game::SCREEN_HEIGHT - 12,
+            (int) Game::SCREEN_HEIGHT - 12,
             12,
             $green,
         );
