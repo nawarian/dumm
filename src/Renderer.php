@@ -24,6 +24,8 @@ class Renderer
 
     private array $nodes = [];
 
+    private array $linesInFOV = [];
+
     private array $flags = [
         'showAutomap' => false,
         'showDebugInformation' => false,
@@ -54,48 +56,24 @@ class Renderer
 
     public function render(): void
     {
-        Draw::begin();
+        $this->linesInFOV = [];
 
+        // Traverse BSP nodes and fill $this->linesInFOV
+        $this->nodes = $this->map->nodes();
+        // Last node is the root node
+        $this->traverseBSPNodes(count($this->nodes) - 1);
+
+        // Draw lines in FOV
+        Draw::begin();
         Draw::clearBackground(new Color(0, 0, 0, 255));
 
-        $this->flags['showAutomap'] && $this->renderAutomap();
-        !$this->flags['showAutomap'] && $this->renderScene();
-
+        $this->renderScene($this->linesInFOV);
         $this->flags['showDebugInformation'] && $this->renderDebugInfo();
 
         Draw::end();
     }
 
-    private function renderAutomap(): void
-    {
-        $vertices = $this->map->vertices();
-        foreach ($this->map->linedefs() as $line) {
-            list($v1, $v2) = $line;
-            list($x0, $y0) = $vertices[$v1];
-            list($x1, $y1) = $vertices[$v2];
-
-            Draw::line(
-                $this->remapXToScreen($x0),
-                $this->remapYToScreen($y0),
-                $this->remapXToScreen($x1),
-                $this->remapYToScreen($y1),
-                new Color(255, 255, 255, 127),
-            );
-        }
-
-        Draw::circle(
-            $this->remapXToScreen($this->player->x),
-            $this->remapYToScreen($this->player->y),
-            1,
-            new Color(255, 0, 0, 255),
-        );
-
-        $this->nodes = $this->map->nodes();
-        // the last node is the root node
-        $this->renderBSPNodes(count($this->nodes) - 1);
-    }
-
-    private function renderBSPNodes(int $nodeId): void
+    private function traverseBSPNodes(int $nodeId): void
     {
         // If that's a subsector, render the subsector instead
         if ($nodeId & 0x8000) {
@@ -105,7 +83,7 @@ class Renderer
             // Get the subSectorId bit only
             $nodeId &= ~0x8000;
 
-            $this->renderSubSector($nodeId);
+            $this->addSubSectorToLinesInFOV($nodeId);
             return;
         }
 
@@ -118,15 +96,15 @@ class Renderer
         ) <= 0;
 
         if (true === $isOnLeftSide) {
-            $this->renderBSPNodes($this->nodes[$nodeId][13]);
-            $this->renderBSPNodes($this->nodes[$nodeId][12]);
+            $this->traverseBSPNodes($this->nodes[$nodeId][13]);
+            $this->traverseBSPNodes($this->nodes[$nodeId][12]);
         } else {
-            $this->renderBSPNodes($this->nodes[$nodeId][12]);
-            $this->renderBSPNodes($this->nodes[$nodeId][13]);
+            $this->traverseBSPNodes($this->nodes[$nodeId][12]);
+            $this->traverseBSPNodes($this->nodes[$nodeId][13]);
         }
     }
 
-    private function renderSubSector(int $subSectorId): void
+    private function addSubSectorToLinesInFOV(int $subSectorId): void
     {
         list($segCount, $segmentId) = $this->map->subSectors()[$subSectorId];
         $fovColor = new Color(255, 0, 0, 255);
@@ -142,16 +120,53 @@ class Renderer
             $v1Angle = 0.0;
             $v2Angle = 0.0;
             if ($this->player->clipVertexesInFOV($v1, $v2, $v1Angle, $v2Angle)) {
-                list($x0, $y0) = $v1;
-                list($x1, $y1) = $v2;
+                $this->linesInFOV[] = [$v1, $v2, $v1Angle, $v2Angle];
+            }
+        }
+    }
+
+    private function renderScene(array $linesInFOV): void
+    {
+        if ($this->flags['showAutomap']) {
+            $vertices = $this->map->vertices();
+            foreach ($this->map->linedefs() as $line) {
+                list($v1, $v2) = $line;
+                list($x0, $y0) = $vertices[$v1];
+                list($x1, $y1) = $vertices[$v2];
 
                 Draw::line(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
                     $this->remapYToScreen($y1),
-                    $fovColor,
+                    new Color(255, 255, 255, 127),
                 );
+            }
+
+            Draw::circle(
+                $this->remapXToScreen($this->player->x),
+                $this->remapYToScreen($this->player->y),
+                1,
+                new Color(255, 0, 0, 255),
+            );
+        }
+
+        $red = new Color(255, 0, 0, 255);
+        foreach ($linesInFOV as $line) {
+            list($v1, $v2, $v1Angle, $v2Angle) = $line;
+            list($x0, $y0) = $v1;
+            list($x1, $y1) = $v2;
+
+            if ($this->flags['showAutomap']) {
+                Draw::line(
+                    $this->remapXToScreen($x0),
+                    $this->remapYToScreen($y0),
+                    $this->remapXToScreen($x1),
+                    $this->remapYToScreen($y1),
+                    $red,
+                );
+            } else {
+                // Render 3D scene
             }
         }
     }
@@ -174,9 +189,6 @@ class Renderer
 
         return (int) (Game::SCREEN_HEIGHT - ($yMapPosition + (-$yMin)) / $scaleFactor);
     }
-
-    private function renderScene(): void
-    {}
 
     private function renderDebugInfo(): void
     {
