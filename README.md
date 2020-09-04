@@ -24,7 +24,7 @@ $ ./doom
 
 - [x] Read WAD file
 - [x] Render automap
-- [ ] Traverse BSP tree
+- [x] Traverse BSP tree
 - [ ] Render scene lines
 - [ ] Render scene rectangles
 - [ ] Add perspective
