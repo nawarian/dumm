@@ -16,6 +16,7 @@
     "autoload": {
         "psr-4": {
             "Nawarian\\Dumm\\": "src/"
-        }
+        },
+        "files": ["src/functions.php"]
     }
 }

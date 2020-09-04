@@ -7,6 +7,7 @@ namespace  Nawarian\Dumm;
 use raylib\{
     Color,
     Draw,
+    Input\Key,
     Timming,
     Window,
 };
@@ -42,6 +43,14 @@ class Game
     }
 
     private function update(): void
-    {}
+    {
+        if (Key::isDown(Key::RIGHT)) {
+            $this->state->player->rotateRight();
+        }
+
+        if (Key::isDown(Key::LEFT)) {
+            $this->state->player->rotateLeft();
+        }
+    }
 }
 

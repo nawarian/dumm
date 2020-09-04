@@ -41,7 +41,7 @@ class Renderer
     {
         Draw::begin();
 
-        Draw::clearBackground(new Color(255, 255, 255, 255));
+        Draw::clearBackground(new Color(0, 0, 0, 255));
 
         $this->renderAutomap();
         $this->renderScene();
@@ -64,7 +64,7 @@ class Renderer
                 $this->remapYToScreen($y0),
                 $this->remapXToScreen($x1),
                 $this->remapYToScreen($y1),
-                new Color(0, 0, 0, 255),
+                new Color(255, 255, 255, 127),
             );
         }
 
@@ -114,23 +114,31 @@ class Renderer
     private function renderSubSector(int $subSectorId): void
     {
         list($segCount, $segmentId) = $this->map->subSectors()[$subSectorId];
+        $fovColor = new Color(255, 0, 0, 255);
 
-        list(
-            $vertexStart,
-            $vertexEnd,
-        ) = $this->map->segments()[$segmentId];
+        for ($i = 0; $i < $segCount; ++$i) {
+            list(
+                $vertexStart,
+                $vertexEnd,
+            ) = $this->map->segments()[$segmentId + $i];
 
-        list($x0, $y0) = $this->map->vertices()[$vertexStart];
-        list($x1, $y1) = $this->map->vertices()[$vertexEnd];
+            $v1 = $this->map->vertices()[$vertexStart];
+            $v2 = $this->map->vertices()[$vertexEnd];
+            $v1Angle = 0.0;
+            $v2Angle = 0.0;
+            if ($this->player->clipVertexesInFOV($v1, $v2, $v1Angle, $v2Angle)) {
+                list($x0, $y0) = $v1;
+                list($x1, $y1) = $v2;
 
-        $randomColor = new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255);
-        Draw::line(
-            $this->remapXToScreen($x0),
-            $this->remapYToScreen($y0),
-            $this->remapXToScreen($x1),
-            $this->remapYToScreen($y1),
-            $randomColor,
-        );
+                Draw::line(
+                    $this->remapXToScreen($x0),
+                    $this->remapYToScreen($y0),
+                    $this->remapXToScreen($x1),
+                    $this->remapYToScreen($y1),
+                    $fovColor,
+                );
+            }
+        }
     }
 
     private function remapXToScreen(int $xMapPosition): int

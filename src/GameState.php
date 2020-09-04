@@ -10,6 +10,8 @@ class GameState
 
     public Map $map;
 
+    public Player $player;
+
     public function __construct(WAD $wad)
     {
         $this->wad = $wad;
@@ -18,6 +20,7 @@ class GameState
     public function setMap(string $mapId): void
     {
         $this->map = $this->wad->fetchMap($mapId);
+        $this->player = $this->map->fetchPlayer(1);
     }
 }
 
