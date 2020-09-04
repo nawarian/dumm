@@ -169,5 +169,50 @@ class WAD
 
         return $nodes;
     }
+
+    public function fetchSubSectors(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $subSectorsSizeInBytes = 2 * 2;
+        $subSectors = [];
+        for ($i = 0; $i < $size / $subSectorsSizeInBytes; ++$i) {
+            $subSectors[$i] = [
+                // Segcount
+                $this->reader->readUint16(),
+                // Seg
+                $this->reader->readUint16(),
+            ];
+        }
+
+        return $subSectors;
+    }
+
+    public function fetchSegments(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $segmentsSizeInBytes = 6 * 2;
+        $segments = [];
+        for ($i = 0; $i < $size / $segmentsSizeInBytes; ++$i) {
+            $segments[$i] = [
+                // Start and End vertices IDs
+                $this->reader->readUint16(),
+                $this->reader->readUint16(),
+                // Angle
+                $this->reader->readUint16(),
+                // Linedef ID
+                $this->reader->readUint16(),
+                // Direction
+                $this->reader->readUint16(),
+                // Offset
+                $this->reader->readUint16(),
+            ];
+        }
+
+        return $segments;
+    }
 }
 

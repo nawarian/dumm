@@ -64,7 +64,7 @@ class Renderer
                 $this->remapYToScreen($y0),
                 $this->remapXToScreen($x1),
                 $this->remapYToScreen($y1),
-                new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255),
+                new Color(0, 0, 0, 255),
             );
         }
 
@@ -113,7 +113,24 @@ class Renderer
 
     private function renderSubSector(int $subSectorId): void
     {
-        // @todo
+        list($segCount, $segmentId) = $this->map->subSectors()[$subSectorId];
+
+        list(
+            $vertexStart,
+            $vertexEnd,
+        ) = $this->map->segments()[$segmentId];
+
+        list($x0, $y0) = $this->map->vertices()[$vertexStart];
+        list($x1, $y1) = $this->map->vertices()[$vertexEnd];
+
+        $randomColor = new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255);
+        Draw::line(
+            $this->remapXToScreen($x0),
+            $this->remapYToScreen($y0),
+            $this->remapXToScreen($x1),
+            $this->remapYToScreen($y1),
+            $randomColor,
+        );
     }
 
     private function remapXToScreen(int $xMapPosition): int

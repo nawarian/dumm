@@ -122,18 +122,30 @@ class Map
 
     public function segments(): iterable
     {
-        $segments = $this->lumps[self::SEGMENTS_OFFSET];
+        if (isset($this->cache['segments'])) {
+            return $this->cache['segments'];
+        }
 
-        // @todo
-        return [];
+        $segments = $this->wad->fetchSegments(
+            $this->lumps[self::SEGS_OFFSET],
+        );
+
+        $this->cache['segments'] = $segments;
+        return $segments;
     }
 
-    public function subSectors(): iterable
+    public function subSectors(): array
     {
-        $subSectors = $this->lumps[self::SSECTORS_OFFSET];
+        if (isset($this->cache['subsectors'])) {
+            return $this->cache['subsectors'];
+        }
 
-        // @todo
-        return [];
+        $subSectors = $this->wad->fetchSubSectors(
+            $this->lumps[self::SSECTORS_OFFSET],
+        );
+
+        $this->cache['subsectors'] = $subSectors;
+        return $subSectors;
     }
 
     public function nodes(): array 
