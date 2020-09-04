@@ -14,27 +14,27 @@ use raylib\{
 
 class Renderer
 {
-    public int $screenWidth;
-
-    public int $screenHeight;
-
     public Map $map;
 
-    private array $mapEdges;
+    private array $mapEdges = [];
+    private int $mapWidth;
+    private int $mapHeight;
 
     private Player $player;
 
-    private int $scaleFactor = 5;
-
     private array $nodes = [];
 
-    public function __construct(int $screenWidth, int $screenHeight, Map $map)
+    public function __construct(Map $map)
     {
-        $this->screenWidth = --$screenWidth;
-        $this->screenHeight = --$screenHeight;
         $this->map = $map;
-        $this->mapEdges = $map->fetchMapEdges();
         $this->player = $map->fetchPlayer(1);
+
+        $this->mapEdges = $this->map->fetchMapEdges();
+        list($xMin, $yMin) = $this->mapEdges[0];
+        list($xMax, $yMax) = $this->mapEdges[1];
+
+        $this->mapWidth = abs($xMax - $xMin);
+        $this->mapHeight = abs($yMax - $yMin);
     }
 
     public function render(): void
@@ -144,15 +144,20 @@ class Renderer
     private function remapXToScreen(int $xMapPosition): int
     {
         list($xMin) = $this->mapEdges[0]; 
+        list($xMax) = $this->mapEdges[1];
+        $scaleFactor = $this->mapWidth / Game::SCREEN_WIDTH;
 
-        return (int) (($xMapPosition + (-$xMin)) / $this->scaleFactor);
+        return (int) (($xMapPosition + (-$xMin)) / $scaleFactor);
     }
 
     private function remapYToScreen(int $yMapPosition): int
     {
         list(, $yMin) = $this->mapEdges[0]; 
+        list(, $yMax) = $this->mapEdges[1];
+        $mapHeight= abs($yMax - $yMin);
+        $scaleFactor = $this->mapHeight / Game::SCREEN_HEIGHT;
 
-        return (int) ($this->screenHeight - ($yMapPosition + (-$yMin)) / $this->scaleFactor);
+        return (int) (Game::SCREEN_HEIGHT - ($yMapPosition + (-$yMin)) / $scaleFactor);
     }
 
     private function renderScene(): void

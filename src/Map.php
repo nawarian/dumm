@@ -104,20 +104,15 @@ class Map
 
     public function fetchMapEdges(): array
     {
-        $xMin = 0;
-        $yMin = 0;
-        $xMax = 0;
-        $yMax = 0;
-
+        $x = [];
+        $y = [];
         foreach ($this->vertices() as $v) {
-            list($x, $y) = $v;
-            $xMin = $xMin < $x ? $xMin : $x;
-            $yMin = $yMin < $y ? $yMin : $y;
-            $xMax = $xMax > $x ? $xMax : $x;
-            $yMax = $yMax > $y ? $yMax : $y;
+            list($vx, $vy) = $v;
+            $x[] = $vx;
+            $y[] = $vy;
         }
 
-        return [[$xMin, $yMin], [$xMax, $yMax]];
+        return [[min($x), min($y)], [max($x), max($y)]];
     }
 
     public function segments(): iterable
