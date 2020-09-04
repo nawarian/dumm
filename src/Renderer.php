@@ -24,7 +24,7 @@ class Renderer
 
     private Player $player;
 
-    private int $scaleFactor = 15;
+    private int $scaleFactor = 5;
 
     private array $nodes = [];
 
