@@ -28,7 +28,7 @@ class Renderer
 
     private array $flags = [
         'showAutomap' => false,
-        'showDebugInformation' => false,
+        'showDebugInformation' => true,
     ];
 
     public function __construct(Map $map)

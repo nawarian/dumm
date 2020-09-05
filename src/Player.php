@@ -18,8 +18,8 @@ class Player extends Thing
     public function clipVertexesInFOV(array $v1, array $v2, float &$v1Angle, float &$v2Angle): bool
     {
         $pos = [$this->x, $this->y];
-        $v1Angle = (float) angleToVertex($pos, $v1);
-        $v2Angle = (float) angleToVertex($pos, $v2);
+        $v1Angle = angleToVertex($pos, $v1);
+        $v2Angle = angleToVertex($pos, $v2);
 
         $angleSpan = $v1Angle - $v2Angle;
 
@@ -31,9 +31,9 @@ class Player extends Thing
         $v2Angle = normalize360($v2Angle - $this->angle);
         $halfFOV = $this->fov / 2;
 
-        $v1Moved = $v1Angle + $halfFOV;
+        $v1Moved = normalize360($v1Angle + $halfFOV);
         if ($v1Moved > $this->fov) {
-            $v1MovedAngle = $v1Moved - $this->fov;
+            $v1MovedAngle = normalize360($v1Moved - $this->fov);
 
             if ($v1MovedAngle >= $angleSpan) {
                 return false;
@@ -42,14 +42,14 @@ class Player extends Thing
             $v1Angle = $halfFOV;
         }
 
-        $v2Moved = $halfFOV - $v2Angle;
+        $v2Moved = normalize360($halfFOV - $v2Angle);
 
         if ($v2Moved > $this->fov) {
-            $v2Angle = -$halfFOV;
+            $v2Angle = normalize360(-$halfFOV);
         }
 
-        $v1Angle += 90;
-        $v2Angle += 90;
+        $v1Angle = normalize360($v1Angle + 90);
+        $v2Angle = normalize360($v2Angle + 90);
 
         return true;
     }

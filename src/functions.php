@@ -24,6 +24,6 @@ function angleToVertex(array $from, array $to): float
     $dx = $toX - $fromX;
     $dy = $toY - $fromY;
 
-    return normalize360((atan2($dy, $dx) * 180 / pi()));
+    return normalize360(atan2($dy, $dx) * 180 / pi());
 }
 
