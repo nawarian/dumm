@@ -20,9 +20,9 @@ class Renderer
     private int $mapWidth;
     private int $mapHeight;
 
-    private Player $player;
-
     private array $nodes = [];
+    private array $lineDefs = [];
+    private Player $player;
 
     private array $linesInFOV = [];
 
@@ -34,6 +34,9 @@ class Renderer
     public function __construct(Map $map)
     {
         $this->map = $map;
+
+        $this->nodes = $this->map->nodes();
+        $this->lineDefs = $this->map->linedefs();
         $this->player = $map->fetchPlayer(1);
 
         $this->mapEdges = $this->map->fetchMapEdges();
@@ -59,7 +62,6 @@ class Renderer
         $this->linesInFOV = [];
 
         // Traverse BSP nodes and fill $this->linesInFOV
-        $this->nodes = $this->map->nodes();
         // Last node is the root node
         $this->traverseBSPNodes(count($this->nodes) - 1);
 
@@ -114,11 +116,14 @@ class Renderer
                 $vertexStart,
                 $vertexEnd,
                 ,
-                ,
+                $lineDefId,
                 $direction,
             ) = $this->map->segments()[$segmentId + $i];
 
-            if ($direction === 1) {
+            $lineDef = $this->lineDefs[$lineDefId];
+            list(,,,,,$rightSideDef, $leftSideDef) = $lineDef;
+
+            if ($leftSideDef === 0xFFFF) {
                 continue;
             }
 
