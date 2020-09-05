@@ -80,12 +80,18 @@ class Map
         return $linedefs;
     }
 
-    public function sidedefs(): iterable
+    public function sidedefs(): array
     {
-        $sidedefs = $this->lumps[self::SIDEDEFS_OFFSET];
+        if (isset($this->cache['sidedefs'])) {
+            return $this->cache['sidedefs'];
+        }
 
-        // @todo
-        return [];
+        $sidedefs = $this->wad->fetchSideDefs(
+            $this->lumps[self::SIDEDEFS_OFFSET]
+        );
+
+        $this->cache['sidedefs'] = $sidedefs;
+        return $sidedefs;
     }
 
     public function vertices(): array

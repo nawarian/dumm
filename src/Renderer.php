@@ -22,9 +22,15 @@ class Renderer
 
     private array $nodes = [];
     private array $lineDefs = [];
+    private array $sideDefs = [];
+
+    private array $textureColorMap = [];
+
     private Player $player;
 
     private array $linesInFOV = [];
+
+    private array $renderableSegments = [];
 
     private array $flags = [
         'showAutomap' => false,
@@ -37,6 +43,7 @@ class Renderer
 
         $this->nodes = $this->map->nodes();
         $this->lineDefs = $this->map->linedefs();
+        $this->sideDefs = $this->map->sidedefs();
         $this->player = $map->fetchPlayer(1);
 
         $this->mapEdges = $this->map->fetchMapEdges();
@@ -64,6 +71,9 @@ class Renderer
         // Traverse BSP nodes and fill $this->linesInFOV
         // Last node is the root node
         $this->traverseBSPNodes(count($this->nodes) - 1);
+
+        // Clip solid walls to visible area only
+        $this->prepareRenderableSegments();
 
         // Draw lines in FOV
         Draw::begin();
@@ -127,14 +137,40 @@ class Renderer
                 continue;
             }
 
+            $sidedef = $this->sideDefs[$rightSideDef];
+
             $v1 = $this->map->vertices()[$vertexStart];
             $v2 = $this->map->vertices()[$vertexEnd];
             $v1Angle = 0.0;
             $v2Angle = 0.0;
             if ($this->player->clipVertexesInFOV($v1, $v2, $v1Angle, $v2Angle)) {
-                $this->linesInFOV[] = [$v1, $v2, $v1Angle, $v2Angle];
+                $this->linesInFOV[] = [$v1, $v2, $v1Angle, $v2Angle, $sidedef];
             }
         }
+    }
+
+    private function prepareRenderableSegments(): void
+    {
+        $dummySideDef = [0, 0, '', '', '', 0];
+        // Initially the two ranges should be outside the viewport
+        $this->renderableSegments = [
+            [PHP_INT_MIN, -1, $dummySideDef],
+            [Game::SCREEN_WIDTH, PHP_INT_MIN, $dummySideDef],
+        ];
+
+        foreach ($this->linesInFOV as $line) {
+            list(,, $v1Angle, $v2Angle) = $line;
+            $xStart = $this->angleToScreenX($v1Angle);
+            $xEnd = $this->angleToScreenX($v2Angle);
+
+            $this->storeClippedWallSegments($xStart, $xEnd);
+        }
+    }
+
+    private function storeClippedWallSegments(int $xStart, int $xEnd): array
+    {
+        // @todo
+        return [];
     }
 
     private function renderScene(array $linesInFOV): void
@@ -163,14 +199,15 @@ class Renderer
             );
         }
 
-        $red = new Color(255, 0, 0, 255);
-        $orange = new Color(100, 100, 0, 255);
-        foreach ($linesInFOV as $line) {
-            list($v1, $v2, $v1Angle, $v2Angle) = $line;
-            list($x0, $y0) = $v1;
-            list($x1, $y1) = $v2;
+        // Render automap
+        if (true === $this->flags['showAutomap']) {
+            $red = new Color(255, 0, 0, 255);
+            $orange = new Color(100, 100, 0, 255);
+            foreach ($linesInFOV as $line) {
+                list($v1, $v2, $v1Angle, $v2Angle) = $line;
+                list($x0, $y0) = $v1;
+                list($x1, $y1) = $v2;
 
-            if ($this->flags['showAutomap']) {
                 // Render segments 
                 Draw::line(
                     $this->remapXToScreen($x0),
@@ -196,13 +233,18 @@ class Renderer
                     $this->remapYToScreen($y1),
                     $orange,
                 );
-            } else {
-                // Render 3D line
-                $v1XScreen = $this->angleToScreenX($v1Angle);
-                $v2XScreen = $this->angleToScreenX($v2Angle);
+            }
+        } else {
+            // Render 3D scene
+            foreach ($this->renderableSegments as $range) {
+                list($xStart, $xEnd, $sideDef) = $range;
+                list(,,,, $midTexture) = $sideDef;
+                $width = abs($xEnd - $xStart);
+                $this->textureColorMap[$midTexture] = $this->textureColorMap[$midTexture]
+                    ?? new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255);
+                $color = $this->textureColorMap[$midTexture];
 
-                Draw::line($v1XScreen, 0, $v1XScreen, (int) Game::SCREEN_HEIGHT, $red);
-                Draw::line($v2XScreen, 0, $v2XScreen, (int) Game::SCREEN_HEIGHT, $red);
+                Draw::rectangle((int) $xStart, 0, (int) $width, (int) Game::SCREEN_HEIGHT, $color);
             }
         }
     }

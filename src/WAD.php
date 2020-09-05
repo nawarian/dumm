@@ -133,6 +133,30 @@ class WAD
         return $linedefs;
     }
 
+    public function fetchSideDefs(array $lump): array
+    {
+        list(, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $sideDefsSizeInBytes = 30; // 2 short, 3 8-byte chars, 1 short
+        $sidedefs = [];
+        for ($i = 0; $i < $size / $sideDefsSizeInBytes; ++$i) {
+            $sidedefs[$i] = [
+                // X, Y offsets
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+                // Textures (upper, lower, mid)
+                $this->reader->readString(8),
+                $this->reader->readString(8),
+                $this->reader->readString(8),
+                // sector id
+                $this->reader->readUint16(),
+            ];
+        }
+
+        return $sidedefs;
+    }
+
     public function fetchNodes(array $lump): array
     {
         list(, $offset, $size) = $lump;
