@@ -18,14 +18,15 @@ $ ./doom
 ```
 
 # Current State
-![Rendering automap + root node](current-state.gif)
+![Rendering automap + root node](current-state.png)
 
 # Roadmap
 
 - [x] Read WAD file
 - [x] Render automap
 - [x] Traverse BSP tree
-- [ ] Render scene lines
+- [x] Render scene lines
+- [ ] Clip solid walls
 - [ ] Render scene rectangles
 - [ ] Add perspective
 - [ ] Draw floor and ceiling
