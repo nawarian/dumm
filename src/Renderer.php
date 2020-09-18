@@ -14,6 +14,8 @@ use raylib\{
 
 class Renderer
 {
+    use WallClippingTrait;
+
     public Map $map;
 
     private array $mapEdges = [];
@@ -29,8 +31,6 @@ class Renderer
     private Player $player;
 
     private array $linesInFOV = [];
-
-    private array $renderableSegments = [];
 
     private array $flags = [
         'showAutomap' => false,
@@ -155,27 +155,23 @@ class Renderer
         // Initially the two ranges should be outside the viewport
         $this->renderableSegments = [
             [PHP_INT_MIN, -1, $dummySideDef],
-            [Game::SCREEN_WIDTH, PHP_INT_MIN, $dummySideDef],
+            [Game::SCREEN_WIDTH, PHP_INT_MAX, $dummySideDef],
         ];
 
-        foreach ($this->linesInFOV as $line) {
-            list(,, $v1Angle, $v2Angle) = $line;
+        foreach ($this->linesInFOV as $i => $line) {
+            list(,, $v1Angle, $v2Angle, $sideDef) = $line;
             $xStart = $this->angleToScreenX($v1Angle);
             $xEnd = $this->angleToScreenX($v2Angle);
 
-            $this->storeClippedWallSegments($xStart, $xEnd);
+            $this->storeClippedWallSegments(min($xStart, $xEnd), max($xStart, $xEnd), $sideDef);
         }
-    }
-
-    private function storeClippedWallSegments(int $xStart, int $xEnd): array
-    {
-        // @todo
-        return [];
     }
 
     private function renderScene(array $linesInFOV): void
     {
-        if ($this->flags['showAutomap']) {
+        // Render automap
+        if (true === $this->flags['showAutomap']) {
+            // Draw automap lines
             $vertices = $this->map->vertices();
             foreach ($this->map->linedefs() as $line) {
                 list($v1, $v2) = $line;
@@ -197,10 +193,8 @@ class Renderer
                 1,
                 new Color(255, 0, 0, 255),
             );
-        }
 
-        // Render automap
-        if (true === $this->flags['showAutomap']) {
+            // Draw visible lines only
             $red = new Color(255, 0, 0, 255);
             $orange = new Color(100, 100, 0, 255);
             foreach ($linesInFOV as $line) {

@@ -20,13 +20,18 @@ $ ./doom
 # Current State
 ![Rendering automap + root node](current-state.png)
 
+The above screen has only one color, because all columns are rendered
+using the same color. Due to an error on the BSP Traversal. But the fact
+we see a single color means that we're filling the entire screen, which is
+what should happen :D
+
 # Roadmap
 
 - [x] Read WAD file
 - [x] Render automap
 - [x] Traverse BSP tree
 - [x] Render scene lines
-- [ ] Clip solid walls
+- [x] Clip solid walls
 - [ ] Render scene rectangles
 - [ ] Add perspective
 - [ ] Draw floor and ceiling
