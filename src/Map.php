@@ -108,20 +108,7 @@ class Map
         return $vertices; 
     }
 
-    public function fetchMapEdges(): array
-    {
-        $x = [];
-        $y = [];
-        foreach ($this->vertices() as $v) {
-            list($vx, $vy) = $v;
-            $x[] = $vx;
-            $y[] = $vy;
-        }
-
-        return [[min($x), min($y)], [max($x), max($y)]];
-    }
-
-    public function segments(): iterable
+    public function segments(): array
     {
         if (isset($this->cache['segments'])) {
             return $this->cache['segments'];

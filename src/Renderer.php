@@ -46,7 +46,15 @@ class Renderer
         $this->sideDefs = $this->map->sidedefs();
         $this->player = $map->fetchPlayer(1);
 
-        $this->mapEdges = $this->map->fetchMapEdges();
+        // Fetching map edges
+        $x = $y = [];
+        foreach ($this->map->vertices() as $v) {
+            list($vx, $vy) = $v;
+            $x[] = $vx;
+            $y[] = $vy;
+        }
+        $this->mapEdges = [[min($x), min($y)], [max($x), max($y)]];
+
         list($xMin, $yMin) = $this->mapEdges[0];
         list($xMax, $yMax) = $this->mapEdges[1];
 
