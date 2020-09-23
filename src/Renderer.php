@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
-use raylib\{Color, Draw, Input\Mouse, Text, Timming, Window};
+use raylib\{Color, Draw, Input\Mouse, Text};
 
 class Renderer
 {
@@ -12,7 +12,7 @@ class Renderer
 
     public Map $map;
 
-    private array $mapEdges = [];
+    private array $lowestMapCoords = [];
     private int $mapWidth;
     private int $mapHeight;
 
@@ -49,13 +49,10 @@ class Renderer
             $x[] = $vx;
             $y[] = $vy;
         }
-        $this->mapEdges = [[min($x), min($y)], [max($x), max($y)]];
+        $this->lowestMapCoords = [min($x), min($y)];
 
-        list($xMin, $yMin) = $this->mapEdges[0];
-        list($xMax, $yMax) = $this->mapEdges[1];
-
-        $this->mapWidth = abs($xMax - $xMin);
-        $this->mapHeight = abs($yMax - $yMin);
+        $this->mapWidth = abs(max($x) - min($x));
+        $this->mapHeight = abs(max($y) - min($y));
     }
 
     public function toggleAutomap(): void
@@ -164,8 +161,8 @@ class Renderer
 
         foreach ($this->linesInFOV as $i => $line) {
             list(,, $v1Angle, $v2Angle, $sideDef) = $line;
-            $xStart = $this->angleToScreenX($v1Angle);
-            $xEnd = $this->angleToScreenX($v2Angle);
+            $xStart = angleToScreenX($v1Angle);
+            $xEnd = angleToScreenX($v2Angle);
 
             $this->storeClippedWallSegments(min($xStart, $xEnd), max($xStart, $xEnd), $sideDef);
         }
@@ -202,7 +199,7 @@ class Renderer
             $red = new Color(255, 0, 0, 255);
             $orange = new Color(100, 100, 0, 255);
             foreach ($linesInFOV as $line) {
-                list($v1, $v2, $v1Angle, $v2Angle) = $line;
+                list($v1, $v2) = $line;
                 list($x0, $y0) = $v1;
                 list($x1, $y1) = $v2;
 
@@ -249,8 +246,7 @@ class Renderer
 
     private function remapXToScreen(int $xMapPosition): int
     {
-        list($xMin) = $this->mapEdges[0]; 
-        list($xMax) = $this->mapEdges[1];
+        list($xMin) = $this->lowestMapCoords;
         $scaleFactor = $this->mapWidth / Game::SCREEN_WIDTH;
 
         return (int) (($xMapPosition + (-$xMin)) / $scaleFactor);
@@ -258,33 +254,10 @@ class Renderer
 
     private function remapYToScreen(int $yMapPosition): int
     {
-        list(, $yMin) = $this->mapEdges[0]; 
-        list(, $yMax) = $this->mapEdges[1];
-        $mapHeight= abs($yMax - $yMin);
+        list(, $yMin) = $this->lowestMapCoords;
         $scaleFactor = $this->mapHeight / Game::SCREEN_HEIGHT;
 
         return (int) (Game::SCREEN_HEIGHT - ($yMapPosition + (-$yMin)) / $scaleFactor);
-    }
-
-    private function angleToScreenX(float $angle): int
-    {
-        $halfScreenAngle = 90;
-        $fullScreenAngle = 180;
-        $halfScreenWidth = Game::SCREEN_WIDTH / 2;
-
-        // Left side
-        if ($angle > $halfScreenAngle) {
-            $angle -= $halfScreenAngle;
-            return (int) ($halfScreenWidth - round(
-                $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
-            ));
-        }
-
-        // Right side
-        $angle = $halfScreenAngle - $angle;
-        return (int) ($halfScreenWidth + round(
-            $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
-        ));
     }
 
     private function renderDebugInfo(): void
