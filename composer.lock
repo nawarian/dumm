@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3483bb291fba37f3f248e0970fb2e478",
+    "content-hash": "78317ceb6e88243ac610c66ee4127a0b",
     "packages": [
         {
             "name": "mdurrant/php-binary-reader",
@@ -111,6 +111,43 @@
                 "instantiate"
             ],
             "time": "2020-05-29T17:27:14+00:00"
+        },
+        {
+            "name": "joseph-montanez/raylib-php-stub",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/joseph-montanez/RayLib-PHP-Stubs.git",
+                "reference": "828194ef44f58f00b3682d54fff9fb016f8d9c94"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/joseph-montanez/RayLib-PHP-Stubs/zipball/828194ef44f58f00b3682d54fff9fb016f8d9c94",
+                "reference": "828194ef44f58f00b3682d54fff9fb016f8d9c94",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Zlib"
+            ],
+            "description": "Raylib runtime & extensions header files for PhpStorm",
+            "homepage": "https://www.raylib.com",
+            "keywords": [
+                "autocomplete",
+                "code",
+                "inference",
+                "inspection",
+                "jetbrains",
+                "phpstorm",
+                "raylib",
+                "stubs",
+                "type"
+            ],
+            "time": "2020-04-07T00:55:38+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1838,10 +1875,13 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "joseph-montanez/raylib-php-stub": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
