@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
-use raylib\{
-    Color,
-    Draw,
-    Text,
-    Timming,
-    Window,
-};
+use raylib\{Color, Draw, Input\Mouse, Text, Timming, Window};
 
 class Renderer
 {
@@ -298,16 +292,35 @@ class Renderer
         $green = new Color(0, 255, 0, 255);
         Text::drawFPS(0, 0);
 
+        $mouseX = Mouse::getX();
+        $mouseY = Mouse::getY();
+
         $playerPosition = sprintf(
-            'Coords: (%d, %d) | Angle: %03d',
+            'Coords: (%d, %d) | Angle: %03d | Mouse Coords: (%s, %s)',
             $this->player->x,
             $this->player->y,
             $this->player->angle,
+            $mouseX < 0 || $mouseX > Game::SCREEN_WIDTH ? "{$mouseX}*" : $mouseX,
+            $mouseY < 0 || $mouseY > Game::SCREEN_HEIGHT ? "{$mouseY}*" : $mouseY,
         );
 
         Text::draw(
             $playerPosition,
             0,
+            (int) Game::SCREEN_HEIGHT - 12,
+            12,
+            $green,
+        );
+
+        $memory = memory_get_usage(true) / 1024;
+        $memoryText = sprintf(
+            'Mem.: %d kB',
+            $memory,
+        );
+
+        Text::draw(
+            $memoryText,
+            (int) (Game::SCREEN_WIDTH - Text::measure($memoryText, 12)),
             (int) Game::SCREEN_HEIGHT - 12,
             12,
             $green,
