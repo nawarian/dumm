@@ -23,6 +23,7 @@ class Renderer
     private int $mapHeight;
 
     private array $nodes = [];
+    private array $sectors = [];
     private array $lineDefs = [];
     private array $sideDefs = [];
 
@@ -42,6 +43,7 @@ class Renderer
         $this->map = $map;
 
         $this->nodes = $this->map->nodes();
+        $this->sectors = $this->map->sectors();
         $this->lineDefs = $this->map->linedefs();
         $this->sideDefs = $this->map->sidedefs();
         $this->player = $map->fetchPlayer(1);

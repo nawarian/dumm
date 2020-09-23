@@ -122,6 +122,20 @@ class Map
         return $segments;
     }
 
+    public function sectors(): array
+    {
+        if (isset($this->cache['sectors'])) {
+            return $this->cache['sectors'];
+        }
+
+        $sectors = $this->wad->fetchSectors(
+            $this->lumps[self::SECTORS_OFFSET],
+        );
+
+        $this->cache['sectors'] = $sectors;
+        return $sectors;
+    }
+
     public function subSectors(): array
     {
         if (isset($this->cache['subsectors'])) {
@@ -148,14 +162,6 @@ class Map
 
         $this->cache['nodes'] = $nodes;
         return $nodes; 
-    }
-
-    public function sectors(): iterable
-    {
-        $sectors = $this->lumps[self::SECTORS_OFFSET];
-
-        // @todo
-        return [];
     }
 
     public function reject(): iterable

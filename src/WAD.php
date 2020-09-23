@@ -194,6 +194,35 @@ class WAD
         return $nodes;
     }
 
+    public function fetchSectors(array $lump): array
+    {
+        list (, $offset, $size) = $lump;
+
+        $this->reader->setPosition($offset);
+        $sectorsSizeInBytes = 14; // int16 * 2 + char8 * 2 + uint16 * 3
+        $sectors = [];
+        for ($i = 0; $i < $size / $sectorsSizeInBytes; ++$i) {
+            $sectors[$i] = [
+                // Floor & Ceiling height
+                $this->reader->readInt16(),
+                $this->reader->readInt16(),
+
+                // Floor & Ceiling textures
+                $this->reader->readString(8),
+                $this->reader->readString(8),
+
+                // LightLevel
+                $this->reader->readUInt16(),
+                // Type
+                $this->reader->readUInt16(),
+                // Tag
+                $this->reader->readUInt16(),
+            ];
+        }
+
+        return $sectors;
+    }
+
     public function fetchSubSectors(array $lump): array
     {
         list(, $offset, $size) = $lump;
