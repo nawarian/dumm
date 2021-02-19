@@ -27,9 +27,9 @@ trait WallClippingTrait
         // Find closest span to the right
         foreach ($this->renderableSegments as $i => $segment) {
             // xs = "X Start"; xe = "X End"; p = "Previous"; c = "Current"; n = "Next"
-            list ($pxs, $pxe) = $this->renderableSegments[$i - 1] ?? [PHP_INT_MIN, -1];
-            list ($cxs, $cxe) = $segment;
-            list ($nxs, $nxe) = $this->renderableSegments[$i + 1] ?? [(int) Game::SCREEN_WIDTH, PHP_INT_MAX];
+            [$pxs, $pxe] = $this->renderableSegments[$i - 1] ?? [PHP_INT_MIN, -1];
+            [$cxs, $cxe] = $segment;
+            [$nxs, $nxe] = $this->renderableSegments[$i + 1] ?? [(int) Game::SCREEN_WIDTH, PHP_INT_MAX];
 
             if ($cxs > $xStart) {
                 break;

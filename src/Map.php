@@ -47,13 +47,7 @@ class Map
         );
 
         foreach ($things as $thing) {
-            list (
-                $x,
-                $y,
-                $angle,
-                $type,
-                $flags
-            ) = $thing;
+            [,,, $type,] = $thing;
 
             if ($number === $type) {
                 break;
