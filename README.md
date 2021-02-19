@@ -20,10 +20,12 @@ $ ./doom
 # Current State
 ![Rendering automap + root node](current-state.png)
 
-The above screen has only one color, because all columns are rendered
-using the same color. Due to an error on the BSP Traversal. But the fact
-we see a single color means that we're filling the entire screen, which is
-what should happen :D
+The screen shows a default spacing taken for Ceiling and Floor.
+
+Every solid object has a texture (from WAD definitions) and
+such definitions set a texture name. For each texture name
+I adopted a random color and cached it. That's how the two columns
+appear with the same colors on the screen.
 
 # Roadmap
 
