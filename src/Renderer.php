@@ -237,7 +237,10 @@ class Renderer
                 $this->textureColorMap[$midTexture] = $this->textureColorMap[$midTexture] ?? randomColor();
                 $color = $this->textureColorMap[$midTexture];
 
-                Draw::rectangle((int) $xStart, 0, (int) $width, (int) Game::SCREEN_HEIGHT, $color);
+                $ceiling = 100;
+                $floor = 200;
+
+                Draw::rectangle((int) $xStart, $ceiling, (int) $width, (int) (Game::SCREEN_HEIGHT - $floor), $color);
             }
         }
     }
