@@ -18,8 +18,8 @@ function normalize360($angle)
 
 function angleToVertex(array $from, array $to): float
 {
-    list($fromX, $fromY) = $from;
-    list($toX, $toY) = $to;
+    [$fromX, $fromY] = $from;
+    [$toX, $toY] = $to;
 
     $dx = $toX - $fromX;
     $dy = $toY - $fromY;

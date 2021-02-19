@@ -53,7 +53,7 @@ class WAD
 
         // Advance array pointer to MAP lump
         foreach ($this->lumps as $offset => $data) {
-            list($name) = $data;
+            [$name] = $data;
             if (trim($name) === $mapId) {
                 break;
             }
@@ -64,7 +64,7 @@ class WAD
 
     public function fetchThings(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $thingsLumpSizeInBytes = 2 * 5;
@@ -84,7 +84,7 @@ class WAD
 
     public function fetchVertices(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $vertexLumpSizeInBytes = 2 * 2;
@@ -101,7 +101,7 @@ class WAD
 
     public function fetchLinedefs(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $lineDefLumpSizeInBytes = 2 * 7;
@@ -135,7 +135,7 @@ class WAD
 
     public function fetchSideDefs(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $sideDefsSizeInBytes = 30; // 2 short, 3 8-byte chars, 1 short
@@ -159,7 +159,7 @@ class WAD
 
     public function fetchNodes(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $nodesLumpSizeInBytes = 14 * 2;
@@ -196,7 +196,7 @@ class WAD
 
     public function fetchSectors(array $lump): array
     {
-        list (, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $sectorsSizeInBytes = 14; // int16 * 2 + char8 * 2 + uint16 * 3
@@ -225,7 +225,7 @@ class WAD
 
     public function fetchSubSectors(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $subSectorsSizeInBytes = 2 * 2;
@@ -244,7 +244,7 @@ class WAD
 
     public function fetchSegments(array $lump): array
     {
-        list(, $offset, $size) = $lump;
+        [, $offset, $size] = $lump;
 
         $this->reader->setPosition($offset);
         $segmentsSizeInBytes = 6 * 2;

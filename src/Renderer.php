@@ -45,7 +45,7 @@ class Renderer
         // Fetching map edges
         $x = $y = [];
         foreach ($this->map->vertices() as $v) {
-            list($vx, $vy) = $v;
+            [$vx, $vy] = $v;
             $x[] = $vx;
             $y[] = $vy;
         }
@@ -100,7 +100,7 @@ class Renderer
             return;
         }
 
-        list($xPartition, $yPartition, $changeXPartition, $changeYPartition) = $this->nodes[$nodeId];
+        [$xPartition, $yPartition, $changeXPartition, $changeYPartition] = $this->nodes[$nodeId];
         $dx = $this->player->x - $xPartition;
         $dy = $this->player->y - $yPartition;
 
@@ -119,20 +119,20 @@ class Renderer
 
     private function addSubSectorToLinesInFOV(int $subSectorId): void
     {
-        list($segCount, $segmentId) = $this->map->subSectors()[$subSectorId];
+        [$segCount, $segmentId] = $this->map->subSectors()[$subSectorId];
         $fovColor = new Color(255, 0, 0, 255);
 
         for ($i = 0; $i < $segCount; ++$i) {
-            list(
+            [
                 $vertexStart,
                 $vertexEnd,
                 ,
                 $lineDefId,
                 $direction,
-            ) = $this->map->segments()[$segmentId + $i];
+            ] = $this->map->segments()[$segmentId + $i];
 
             $lineDef = $this->lineDefs[$lineDefId];
-            list(,,,,,$rightSideDef, $leftSideDef) = $lineDef;
+            [,,,,,$rightSideDef, $leftSideDef] = $lineDef;
 
             if ($leftSideDef === 0xFFFF) {
                 continue;
@@ -160,7 +160,7 @@ class Renderer
         ];
 
         foreach ($this->linesInFOV as $i => $line) {
-            list(,, $v1Angle, $v2Angle, $sideDef) = $line;
+            [,, $v1Angle, $v2Angle, $sideDef] = $line;
             $xStart = angleToScreenX($v1Angle);
             $xEnd = angleToScreenX($v2Angle);
 
@@ -175,9 +175,9 @@ class Renderer
             // Draw automap lines
             $vertices = $this->map->vertices();
             foreach ($this->map->linedefs() as $line) {
-                list($v1, $v2) = $line;
-                list($x0, $y0) = $vertices[$v1];
-                list($x1, $y1) = $vertices[$v2];
+                [$v1, $v2] = $line;
+                [$x0, $y0] = $vertices[$v1];
+                [$x1, $y1] = $vertices[$v2];
 
                 Draw::line(
                     $this->remapXToScreen($x0),
@@ -199,9 +199,9 @@ class Renderer
             $red = new Color(255, 0, 0, 255);
             $orange = new Color(100, 100, 0, 255);
             foreach ($linesInFOV as $line) {
-                list($v1, $v2) = $line;
-                list($x0, $y0) = $v1;
-                list($x1, $y1) = $v2;
+                [$v1, $v2] = $line;
+                [$x0, $y0] = $v1;
+                [$x1, $y1] = $v2;
 
                 // Render segments 
                 Draw::line(
@@ -232,8 +232,8 @@ class Renderer
         } else {
             // Render 3D scene
             foreach ($this->renderableSegments as $range) {
-                list($xStart, $xEnd, $sideDef) = $range;
-                list(,,,, $midTexture) = $sideDef;
+                [$xStart, $xEnd, $sideDef] = $range;
+                [,,,, $midTexture] = $sideDef;
                 $width = abs($xEnd - $xStart);
                 $this->textureColorMap[$midTexture] = $this->textureColorMap[$midTexture]
                     ?? new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255);
@@ -246,7 +246,7 @@ class Renderer
 
     private function remapXToScreen(int $xMapPosition): int
     {
-        list($xMin) = $this->lowestMapCoords;
+        [$xMin] = $this->lowestMapCoords;
         $scaleFactor = $this->mapWidth / Game::SCREEN_WIDTH;
 
         return (int) (($xMapPosition + (-$xMin)) / $scaleFactor);
@@ -254,7 +254,7 @@ class Renderer
 
     private function remapYToScreen(int $yMapPosition): int
     {
-        list(, $yMin) = $this->lowestMapCoords;
+        [, $yMin] = $this->lowestMapCoords;
         $scaleFactor = $this->mapHeight / Game::SCREEN_HEIGHT;
 
         return (int) (Game::SCREEN_HEIGHT - ($yMapPosition + (-$yMin)) / $scaleFactor);
