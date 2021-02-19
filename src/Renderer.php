@@ -78,7 +78,7 @@ class Renderer
 
         // Draw lines in FOV
         Draw::begin();
-        Draw::clearBackground(new Color(0, 0, 0, 255));
+        Draw::clearBackground(black(255));
 
         $this->renderScene($this->linesInFOV);
         $this->flags['showDebugInformation'] && $this->renderDebugInfo();
@@ -120,7 +120,6 @@ class Renderer
     private function addSubSectorToLinesInFOV(int $subSectorId): void
     {
         [$segCount, $segmentId] = $this->map->subSectors()[$subSectorId];
-        $fovColor = new Color(255, 0, 0, 255);
 
         for ($i = 0; $i < $segCount; ++$i) {
             [
@@ -184,7 +183,7 @@ class Renderer
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
                     $this->remapYToScreen($y1),
-                    new Color(255, 255, 255, 127),
+                    white(127),
                 );
             }
 
@@ -192,12 +191,12 @@ class Renderer
                 $this->remapXToScreen($this->player->x),
                 $this->remapYToScreen($this->player->y),
                 1,
-                new Color(255, 0, 0, 255),
+                red(255),
             );
 
             // Draw visible lines only
-            $red = new Color(255, 0, 0, 255);
-            $orange = new Color(100, 100, 0, 255);
+            $red = red(255);
+            $orange = orange(255);
             foreach ($linesInFOV as $line) {
                 [$v1, $v2] = $line;
                 [$x0, $y0] = $v1;
@@ -235,8 +234,7 @@ class Renderer
                 [$xStart, $xEnd, $sideDef] = $range;
                 [,,,, $midTexture] = $sideDef;
                 $width = abs($xEnd - $xStart);
-                $this->textureColorMap[$midTexture] = $this->textureColorMap[$midTexture]
-                    ?? new Color(rand(0, 255), rand(0, 255), rand(0, 255), 255);
+                $this->textureColorMap[$midTexture] = $this->textureColorMap[$midTexture] ?? randomColor();
                 $color = $this->textureColorMap[$midTexture];
 
                 Draw::rectangle((int) $xStart, 0, (int) $width, (int) Game::SCREEN_HEIGHT, $color);
@@ -262,7 +260,7 @@ class Renderer
 
     private function renderDebugInfo(): void
     {
-        $green = new Color(0, 255, 0, 255);
+        $green = green(255);
         Text::drawFPS(0, 0);
 
         $mouseX = Mouse::getX();
