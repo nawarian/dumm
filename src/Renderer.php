@@ -134,7 +134,7 @@ class Renderer
             $lineDef = $this->lineDefs[$lineDefId];
             [,,,,,$rightSideDef, $leftSideDef] = $lineDef;
 
-            if ($leftSideDef === 0xFFFF) {
+            if ($leftSideDef === -1) {
                 continue;
             }
 
