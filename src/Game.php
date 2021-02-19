@@ -65,6 +65,14 @@ class Game
         if (Key::isDown(Key::LEFT)) {
             $this->state->player->rotateLeft();
         }
+
+        if (Key::isDown(Key::UP)) {
+            $this->state->player->y += 1;
+        }
+
+        if (Key::isDown(Key::DOWN)) {
+            $this->state->player->y -= 1;
+        }
     }
 }
 
