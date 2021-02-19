@@ -73,9 +73,6 @@ class Renderer
         // Last node is the root node
         $this->traverseBSPNodes(count($this->nodes) - 1);
 
-        // Clip solid walls to visible area only
-        $this->prepareRenderableSegments();
-
         // Draw lines in FOV
         Draw::begin();
         Draw::clearBackground(black(255));
@@ -229,6 +226,9 @@ class Renderer
                 );
             }
         } else {
+            // Clip solid walls to visible area only
+            $this->prepareRenderableSegments();
+
             // Render 3D scene
             foreach ($this->renderableSegments as $range) {
                 [$xStart, $xEnd, $sideDef] = $range;
