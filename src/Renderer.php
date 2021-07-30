@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
-use raylib\{Color, Draw, Input\Mouse, Text};
+use Nawarian\Raylib\Types\Color;
 
 class Renderer
 {
@@ -74,13 +74,13 @@ class Renderer
         $this->traverseBSPNodes(count($this->nodes) - 1);
 
         // Draw lines in FOV
-        Draw::begin();
-        Draw::clearBackground(black(255));
+        Game::$raylib->beginDrawing();
+        Game::$raylib->clearBackground(Color::black(255));
 
         $this->renderScene($this->linesInFOV);
         $this->flags['showDebugInformation'] && $this->renderDebugInfo();
 
-        Draw::end();
+        Game::$raylib->endDrawing();
     }
 
     private function traverseBSPNodes(int $nodeId): void
@@ -175,32 +175,32 @@ class Renderer
                 [$x0, $y0] = $vertices[$v1];
                 [$x1, $y1] = $vertices[$v2];
 
-                Draw::line(
+                Game::$raylib->drawLine(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
                     $this->remapYToScreen($y1),
-                    white(127),
+                    Color::white(127),
                 );
             }
 
-            Draw::circle(
+            Game::$raylib->drawCircle(
                 $this->remapXToScreen($this->player->x),
                 $this->remapYToScreen($this->player->y),
                 1,
-                red(255),
+                Color::red(255),
             );
 
             // Draw visible lines only
-            $red = red(255);
-            $orange = orange(255);
+            $red = Color::red(255);
+            $orange = Color::orange(255);
             foreach ($linesInFOV as $line) {
                 [$v1, $v2] = $line;
                 [$x0, $y0] = $v1;
                 [$x1, $y1] = $v2;
 
-                // Render segments 
-                Draw::line(
+                // Render segments
+                Game::$raylib->drawLine(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
@@ -209,7 +209,7 @@ class Renderer
                 );
 
                 // Draw sight lines
-                Draw::line(
+                Game::$raylib->drawLine(
                     $this->remapXToScreen($this->player->x),
                     $this->remapYToScreen($this->player->y),
                     $this->remapXToScreen($x0),
@@ -217,7 +217,7 @@ class Renderer
                     $orange,
                 );
 
-                Draw::line(
+                Game::$raylib->drawLine(
                     $this->remapXToScreen($this->player->x),
                     $this->remapYToScreen($this->player->y),
                     $this->remapXToScreen($x1),
@@ -240,7 +240,7 @@ class Renderer
                 $ceiling = 100;
                 $floor = 200;
 
-                Draw::rectangle((int) $xStart, $ceiling, (int) $width, (int) (Game::SCREEN_HEIGHT - $floor), $color);
+                Game::$raylib->drawRectangle((int) $xStart, $ceiling, (int) $width, (int) (Game::SCREEN_HEIGHT - $floor), $color);
             }
         }
     }
@@ -263,11 +263,11 @@ class Renderer
 
     private function renderDebugInfo(): void
     {
-        $green = green(255);
-        Text::drawFPS(0, 0);
+        $green = Color::green(255);
+        Game::$raylib->drawFPS(0, 0);
 
-        $mouseX = Mouse::getX();
-        $mouseY = Mouse::getY();
+        $mouseX = Game::$raylib->getMouseX();
+        $mouseY = Game::$raylib->getMouseY();
 
         $playerPosition = sprintf(
             'Coords: (%d, %d) | Angle: %03d | Mouse Coords: (%s, %s)',
@@ -278,7 +278,7 @@ class Renderer
             $mouseY < 0 || $mouseY > Game::SCREEN_HEIGHT ? "{$mouseY}*" : $mouseY,
         );
 
-        Text::draw(
+        Game::$raylib->drawText(
             $playerPosition,
             0,
             (int) Game::SCREEN_HEIGHT - 12,
@@ -292,13 +292,12 @@ class Renderer
             $memory,
         );
 
-        Text::draw(
+        Game::$raylib->drawText(
             $memoryText,
-            (int) (Game::SCREEN_WIDTH - Text::measure($memoryText, 12)),
+            (int) (Game::SCREEN_WIDTH - Game::$raylib->measureText($memoryText, 12)),
             (int) Game::SCREEN_HEIGHT - 12,
             12,
             $green,
         );
     }
 }
-

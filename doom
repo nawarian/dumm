@@ -1,4 +1,3 @@
 #!/bin/bash
 
-php -dextension=./raylib.so bin/main.php ./DOOM1.wad
-
+php bin/main.php ./DOOM1.wad

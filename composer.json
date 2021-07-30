@@ -1,6 +1,6 @@
 {
     "name": "nawarian/dumm",
-    "description": "DOOM 1 ported to PHP with ext/raylib",
+    "description": "DOOM 1 ported to PHP with nawarian/raylib-ffi",
     "type": "project",
     "license": "GPL-3-or-later",
     "authors": [
@@ -9,18 +9,19 @@
             "email": "nickolas@phpsp.org.br"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {
-        "mdurrant/php-binary-reader": "^1.0"
-    },
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Nawarian\\Dumm\\": "src/"
         },
         "files": ["src/functions.php"]
     },
+    "require": {
+        "php": "^8.0",
+        "nawarian/raylib-ffi": "dev-main",
+        "mdurrant/php-binary-reader": "^1.0"
+    },
     "require-dev": {
-        "phpunit/phpunit": "^9.3",
-        "joseph-montanez/raylib-php-stub": "dev-master"
+        "phpunit/phpunit": "^9.5"
     }
 }

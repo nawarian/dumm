@@ -5,9 +5,9 @@ A php port of the 1993's DOOM based on [Amro Ibrahim's DIYDoom](https://github.c
 
 # Requirements
 
-- PHP 7.4
-- [Joseph Montanez's raylib extension](https://github.com/joseph-montanez/raylib-php)
+- PHP 8.0
 - [Basic knowledge on how to use raylib](https://thephp.website/en/issue/games-with-php/)
+- [Raylib](https://raylib.com)
 
 # Running the project
 
