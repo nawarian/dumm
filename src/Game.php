@@ -12,16 +12,11 @@ class Game
     public const SCREEN_WIDTH = 320 * 3.5;
     public const SCREEN_HEIGHT = 200 * 3.5;
 
-    public const VIRTUAL_WIDTH = 320;
-    public const VIRTUAL_HEIGHT = 200;
-
-    private WAD $wad;
     private GameState $state;
     private Renderer $renderer;
 
     public function __construct(WAD $wad)
     {
-        $this->wad = $wad;
         $this->state = new GameState($wad);
     }
 
