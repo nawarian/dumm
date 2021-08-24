@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a0f5051591c8049827a71b88bf5deadf",
+    "content-hash": "c39456ef66fd29af4bc13d4b8c22971a",
     "packages": [
         {
             "name": "mdurrant/php-binary-reader",
@@ -60,12 +60,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nawarian/raylib-ffi.git",
-                "reference": "0b656cb3fe089e879a814069bb922be3c05c2c0e"
+                "reference": "f6572b4ab83b9287fcdbd6b0c379578ce7f3c325"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nawarian/raylib-ffi/zipball/0b656cb3fe089e879a814069bb922be3c05c2c0e",
-                "reference": "0b656cb3fe089e879a814069bb922be3c05c2c0e",
+                "url": "https://api.github.com/repos/nawarian/raylib-ffi/zipball/f6572b4ab83b9287fcdbd6b0c379578ce7f3c325",
+                "reference": "f6572b4ab83b9287fcdbd6b0c379578ce7f3c325",
                 "shasum": ""
             },
             "require": {
@@ -76,6 +76,7 @@
             "require-dev": {
                 "captainhook/captainhook": "^5.4",
                 "captainhook/plugin-composer": "^5.2",
+                "laminas/laminas-code": "^4.4",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "^3.5",
@@ -98,7 +99,7 @@
                 }
             ],
             "description": "Raylib bindings for PHP using FFI",
-            "time": "2021-07-30T18:38:31+00:00"
+            "time": "2021-08-23T17:46:46+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -1015,16 +1016,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.7",
+            "version": "9.5.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "d0dc8b6999c937616df4fb046792004b33fd31c5"
+                "reference": "191768ccd5c85513b4068bdbe99bb6390c7d54fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d0dc8b6999c937616df4fb046792004b33fd31c5",
-                "reference": "d0dc8b6999c937616df4fb046792004b33fd31c5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/191768ccd5c85513b4068bdbe99bb6390c7d54fb",
+                "reference": "191768ccd5c85513b4068bdbe99bb6390c7d54fb",
                 "shasum": ""
             },
             "require": {
@@ -1036,7 +1037,7 @@
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.10.1",
-                "phar-io/manifest": "^2.0.1",
+                "phar-io/manifest": "^2.0.3",
                 "phar-io/version": "^3.0.2",
                 "php": ">=7.3",
                 "phpspec/prophecy": "^1.12.1",
@@ -1110,7 +1111,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-07-19T06:14:47+00:00"
+            "time": "2021-07-31T15:17:34+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -2067,7 +2068,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^8.0"
+    },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"
 }

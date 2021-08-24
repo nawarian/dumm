@@ -5,6 +5,19 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Raylib\Types\Color;
+use function Nawarian\Raylib\{
+    BeginDrawing,
+    ClearBackground,
+    DrawCircle,
+    DrawFPS,
+    DrawLine,
+    DrawRectangle,
+    DrawText,
+    EndDrawing,
+    GetMouseX,
+    GetMouseY,
+    MeasureText
+};
 
 class Renderer
 {
@@ -74,13 +87,13 @@ class Renderer
         $this->traverseBSPNodes(count($this->nodes) - 1);
 
         // Draw lines in FOV
-        Game::$raylib->beginDrawing();
-        Game::$raylib->clearBackground(Color::black(255));
+        BeginDrawing();
+        ClearBackground(Color::black(255));
 
         $this->renderScene($this->linesInFOV);
         $this->flags['showDebugInformation'] && $this->renderDebugInfo();
 
-        Game::$raylib->endDrawing();
+        EndDrawing();
     }
 
     private function traverseBSPNodes(int $nodeId): void
@@ -175,7 +188,7 @@ class Renderer
                 [$x0, $y0] = $vertices[$v1];
                 [$x1, $y1] = $vertices[$v2];
 
-                Game::$raylib->drawLine(
+                DrawLine(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
@@ -184,7 +197,7 @@ class Renderer
                 );
             }
 
-            Game::$raylib->drawCircle(
+            DrawCircle(
                 $this->remapXToScreen($this->player->x),
                 $this->remapYToScreen($this->player->y),
                 1,
@@ -200,7 +213,7 @@ class Renderer
                 [$x1, $y1] = $v2;
 
                 // Render segments
-                Game::$raylib->drawLine(
+                drawLine(
                     $this->remapXToScreen($x0),
                     $this->remapYToScreen($y0),
                     $this->remapXToScreen($x1),
@@ -209,7 +222,7 @@ class Renderer
                 );
 
                 // Draw sight lines
-                Game::$raylib->drawLine(
+                drawLine(
                     $this->remapXToScreen($this->player->x),
                     $this->remapYToScreen($this->player->y),
                     $this->remapXToScreen($x0),
@@ -217,7 +230,7 @@ class Renderer
                     $orange,
                 );
 
-                Game::$raylib->drawLine(
+                drawLine(
                     $this->remapXToScreen($this->player->x),
                     $this->remapYToScreen($this->player->y),
                     $this->remapXToScreen($x1),
@@ -240,7 +253,7 @@ class Renderer
                 $ceiling = 100;
                 $floor = 200;
 
-                Game::$raylib->drawRectangle((int) $xStart, $ceiling, (int) $width, (int) (Game::SCREEN_HEIGHT - $floor), $color);
+                DrawRectangle((int) $xStart, $ceiling, (int) $width, (int) (Game::SCREEN_HEIGHT - $floor), $color);
             }
         }
     }
@@ -264,10 +277,10 @@ class Renderer
     private function renderDebugInfo(): void
     {
         $green = Color::green(255);
-        Game::$raylib->drawFPS(0, 0);
+        DrawFPS(0, 0);
 
-        $mouseX = Game::$raylib->getMouseX();
-        $mouseY = Game::$raylib->getMouseY();
+        $mouseX = GetMouseX();
+        $mouseY = GetMouseY();
 
         $playerPosition = sprintf(
             'Coords: (%d, %d) | Angle: %03d | Mouse Coords: (%s, %s)',
@@ -278,7 +291,7 @@ class Renderer
             $mouseY < 0 || $mouseY > Game::SCREEN_HEIGHT ? "{$mouseY}*" : $mouseY,
         );
 
-        Game::$raylib->drawText(
+        DrawText(
             $playerPosition,
             0,
             (int) Game::SCREEN_HEIGHT - 12,
@@ -292,9 +305,9 @@ class Renderer
             $memory,
         );
 
-        Game::$raylib->drawText(
+        DrawText(
             $memoryText,
-            (int) (Game::SCREEN_WIDTH - Game::$raylib->measureText($memoryText, 12)),
+            (int) (Game::SCREEN_WIDTH - MeasureText($memoryText, 12)),
             (int) Game::SCREEN_HEIGHT - 12,
             12,
             $green,

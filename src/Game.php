@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Raylib\Raylib;
-use Nawarian\Raylib\RaylibFactory;
+use function Nawarian\Raylib\{InitWindow, IsKeyDown, IsKeyPressed, SetTargetFPS, WindowShouldClose};
 
 class Game
 {
@@ -19,24 +19,19 @@ class Game
     private GameState $state;
     private Renderer $renderer;
 
-    public static Raylib $raylib;
-
     public function __construct(WAD $wad)
     {
         $this->wad = $wad;
         $this->state = new GameState($wad);
-
-        $factory = new RaylibFactory();
-        self::$raylib = $factory->newInstance();
     }
 
     public function start(): void
     {
-        self::$raylib->initWindow((int) self::SCREEN_WIDTH, (int) self::SCREEN_HEIGHT, 'DUMM - PHP DOOM');
-        self::$raylib->setTargetFPS(60);
+        InitWindow((int) self::SCREEN_WIDTH, (int) self::SCREEN_HEIGHT, 'DUMM - PHP DOOM');
+        SetTargetFPS(60);
         $this->switchGameMap('E1M1');
 
-        while (false === self::$raylib->windowShouldClose()) {
+        while (false === WindowShouldClose()) {
             $this->update();
             $this->renderer->render();
         }
@@ -50,29 +45,28 @@ class Game
 
     private function update(): void
     {
-        if (self::$raylib->isKeyPressed(Raylib::KEY_TAB)) {
+        if (IsKeyPressed(Raylib::KEY_TAB)) {
             $this->renderer->toggleAutomap();
         }
 
-        if (self::$raylib->isKeyPressed(Raylib::KEY_BACKSPACE)) {
+        if (IsKeyPressed(Raylib::KEY_BACKSPACE)) {
             $this->renderer->toggleDebug();
         }
 
-        if (self::$raylib->isKeyDown(Raylib::KEY_RIGHT)) {
+        if (IsKeyDown(Raylib::KEY_RIGHT)) {
             $this->state->player->rotateRight();
         }
 
-        if (self::$raylib->isKeyDown(Raylib::KEY_LEFT)) {
+        if (IsKeyDown(Raylib::KEY_LEFT)) {
             $this->state->player->rotateLeft();
         }
 
-        if (self::$raylib->isKeyDown(Raylib::KEY_UP)) {
+        if (IsKeyDown(Raylib::KEY_UP)) {
             $this->state->player->y += 1;
         }
 
-        if (self::$raylib->isKeyDown(Raylib::KEY_DOWN)) {
+        if (IsKeyDown(Raylib::KEY_DOWN)) {
             $this->state->player->y -= 1;
         }
     }
 }
-
