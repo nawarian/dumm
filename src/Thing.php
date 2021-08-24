@@ -4,26 +4,15 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Raylib\Types\Vector2;
+
 class Thing
 {
-    public int $x;
-    public int $y;
-    public float $angle;
-    public int $type;
-    public int $flags;
-
     public function __construct(
-        int $x,
-        int $y,
-        int $angle,
-        int $type,
-        int $flags
-    ) {
-        $this->x = $x;
-        $this->y = $y;
-        $this->angle = $angle;
-        $this->type = $type;
-        $this->flags = $flags;
-    }
+        public Vector2 $position,
+        public float $angle,
+        public int $type,
+        public int $flags,
+    ) {}
 }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use PhpBinaryReader\{BinaryReader, Endian};
+use Nawarian\Raylib\Types\Vector2;
 
 class WAD
 {
@@ -90,10 +91,10 @@ class WAD
         $vertexLumpSizeInBytes = 2 * 2;
         $vertices = [];
         for ($i = 0; $i < $size / $vertexLumpSizeInBytes; ++$i) {
-            $vertices[$i] = [
+            $vertices[$i] = new Vector2(
                 $this->reader->readInt16(),
                 $this->reader->readInt16(),
-            ];
+            );
         }
 
         return $vertices;

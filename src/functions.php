@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Raylib\Types\Color;
+use Nawarian\Raylib\Types\Vector2;
 
 function normalize360(int|float $angle): float
 {
@@ -16,13 +17,10 @@ function normalize360(int|float $angle): float
     return $angle;
 }
 
-function angleToVertex(array $from, array $to): float
+function angleToVertex(Vector2 $from, Vector2 $to): float
 {
-    [$fromX, $fromY] = $from;
-    [$toX, $toY] = $to;
-
-    $dx = $toX - $fromX;
-    $dy = $toY - $fromY;
+    $dx = $to->x - $from->x;
+    $dy = $to->y - $from->y;
 
     return normalize360(atan2($dy, $dx) * 180 / pi());
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Raylib\Types\Vector2;
 use function Nawarian\Dumm\{
     normalize360,
     angleToVertex,
@@ -15,11 +16,10 @@ class Player extends Thing
     private float $rotationSpeed = 10;
 
     // I hate receiving by ref, I'll soon refactor
-    public function clipVertexesInFOV(array $v1, array $v2, float &$v1Angle, float &$v2Angle): bool
+    public function clipVertexesInFOV(Vector2 $v1, Vector2 $v2, float &$v1Angle, float &$v2Angle): bool
     {
-        $pos = [$this->x, $this->y];
-        $v1Angle = angleToVertex($pos, $v1);
-        $v2Angle = angleToVertex($pos, $v2);
+        $v1Angle = angleToVertex($this->position, $v1);
+        $v2Angle = angleToVertex($this->position, $v2);
 
         $angleSpan = $v1Angle - $v2Angle;
 
@@ -63,5 +63,9 @@ class Player extends Thing
     {
         $this->angle = normalize360($this->angle - (0.1875 * $this->rotationSpeed));
     }
-}
 
+    public function distanceToPoint(Vector2 $vertex): float
+    {
+        return sqrt(pow($this->x - $vertex->x, 2) + pow($this->y - $vertex->y, 2));
+    }
+}

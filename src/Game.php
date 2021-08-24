@@ -57,11 +57,11 @@ class Game
         }
 
         if (IsKeyDown(Raylib::KEY_UP)) {
-            $this->state->player->y += 1;
+            $this->state->player->position->y += 1;
         }
 
         if (IsKeyDown(Raylib::KEY_DOWN)) {
-            $this->state->player->y -= 1;
+            $this->state->player->position->y -= 1;
         }
     }
 }

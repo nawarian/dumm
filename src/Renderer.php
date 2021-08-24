@@ -58,9 +58,8 @@ class Renderer
         // Fetching map edges
         $x = $y = [];
         foreach ($this->map->vertices() as $v) {
-            [$vx, $vy] = $v;
-            $x[] = $vx;
-            $y[] = $vy;
+            $x[] = (int) $v->x;
+            $y[] = (int) $v->y;
         }
         $this->lowestMapCoords = [min($x), min($y)];
 
@@ -111,8 +110,8 @@ class Renderer
         }
 
         [$xPartition, $yPartition, $changeXPartition, $changeYPartition] = $this->nodes[$nodeId];
-        $dx = $this->player->x - $xPartition;
-        $dy = $this->player->y - $yPartition;
+        $dx = $this->player->position->x - $xPartition;
+        $dy = $this->player->position->y - $yPartition;
 
         $isOnLeftSide = (
             ($dx * $changeYPartition) - ($dy * $changeXPartition)
@@ -185,21 +184,19 @@ class Renderer
             $vertices = $this->map->vertices();
             foreach ($this->map->linedefs() as $line) {
                 [$v1, $v2] = $line;
-                [$x0, $y0] = $vertices[$v1];
-                [$x1, $y1] = $vertices[$v2];
 
                 DrawLine(
-                    $this->remapXToScreen($x0),
-                    $this->remapYToScreen($y0),
-                    $this->remapXToScreen($x1),
-                    $this->remapYToScreen($y1),
+                    $this->remapXToScreen((int) $vertices[$v1]->x),
+                    $this->remapYToScreen((int) $vertices[$v1]->y),
+                    $this->remapXToScreen((int) $vertices[$v2]->x),
+                    $this->remapYToScreen((int) $vertices[$v2]->y),
                     Color::white(127),
                 );
             }
 
             DrawCircle(
-                $this->remapXToScreen($this->player->x),
-                $this->remapYToScreen($this->player->y),
+                $this->remapXToScreen((int) $this->player->position->x),
+                $this->remapYToScreen((int) $this->player->position->y),
                 1,
                 Color::red(255),
             );
@@ -209,32 +206,30 @@ class Renderer
             $orange = Color::orange(255);
             foreach ($linesInFOV as $line) {
                 [$v1, $v2] = $line;
-                [$x0, $y0] = $v1;
-                [$x1, $y1] = $v2;
 
                 // Render segments
-                drawLine(
-                    $this->remapXToScreen($x0),
-                    $this->remapYToScreen($y0),
-                    $this->remapXToScreen($x1),
-                    $this->remapYToScreen($y1),
+                DrawLine(
+                    $this->remapXToScreen((int) $v1->x),
+                    $this->remapYToScreen((int) $v1->y),
+                    $this->remapXToScreen((int) $v2->x),
+                    $this->remapYToScreen((int) $v2->y),
                     $red,
                 );
 
                 // Draw sight lines
-                drawLine(
-                    $this->remapXToScreen($this->player->x),
-                    $this->remapYToScreen($this->player->y),
-                    $this->remapXToScreen($x0),
-                    $this->remapYToScreen($y0),
+                DrawLine(
+                    $this->remapXToScreen((int) $this->player->position->x),
+                    $this->remapYToScreen((int) $this->player->position->y),
+                    $this->remapXToScreen((int) $v1->x),
+                    $this->remapYToScreen((int) $v1->y),
                     $orange,
                 );
 
-                drawLine(
-                    $this->remapXToScreen($this->player->x),
-                    $this->remapYToScreen($this->player->y),
-                    $this->remapXToScreen($x1),
-                    $this->remapYToScreen($y1),
+                DrawLine(
+                    $this->remapXToScreen((int) $this->player->position->x),
+                    $this->remapYToScreen((int) $this->player->position->y),
+                    $this->remapXToScreen((int) $v2->x),
+                    $this->remapYToScreen((int) $v2->y),
                     $orange,
                 );
             }
@@ -284,8 +279,8 @@ class Renderer
 
         $playerPosition = sprintf(
             'Coords: (%d, %d) | Angle: %03d | Mouse Coords: (%s, %s)',
-            $this->player->x,
-            $this->player->y,
+            $this->player->position->x,
+            $this->player->position->x,
             $this->player->angle,
             $mouseX < 0 || $mouseX > Game::SCREEN_WIDTH ? "{$mouseX}*" : $mouseX,
             $mouseY < 0 || $mouseY > Game::SCREEN_HEIGHT ? "{$mouseY}*" : $mouseY,

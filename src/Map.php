@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Raylib\Types\Vector2;
+
 class Map
 {
     private const THINGS_OFFSET = 1;
@@ -54,7 +56,7 @@ class Map
             }
         }
 
-        $player = new Player(...$thing);
+        $player = new Player(new Vector2(array_shift($thing), array_shift($thing)), ...$thing);
         $this->cache["player-{$number}"] = $player;
 
         return $player;
