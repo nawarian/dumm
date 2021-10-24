@@ -12,7 +12,7 @@ use function Nawarian\Dumm\{
 
 class Player extends Thing
 {
-    private int $fov = 90;
+    public int $fov = 90;
     private float $rotationSpeed = 10;
 
     // I hate receiving by ref, I'll soon refactor
@@ -36,6 +36,8 @@ class Player extends Thing
             $v1MovedAngle = normalize360($v1Moved - $this->fov);
 
             if ($v1MovedAngle >= $angleSpan) {
+                $v1Angle = round($v1Angle, 2);
+                $v2Angle = round($v2Angle, 2);
                 return false;
             }
 
@@ -48,8 +50,8 @@ class Player extends Thing
             $v2Angle = normalize360(-$halfFOV);
         }
 
-        $v1Angle = normalize360($v1Angle + 90);
-        $v2Angle = normalize360($v2Angle + 90);
+        $v1Angle = round(normalize360($v1Angle + 90), 2);
+        $v2Angle = round(normalize360($v2Angle + 90), 2);
 
         return true;
     }

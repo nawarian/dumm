@@ -7,6 +7,17 @@ namespace Nawarian\Dumm;
 use Nawarian\Raylib\Types\Color;
 use Nawarian\Raylib\Types\Vector2;
 
+const PI = 3.14159265358979;
+
+function xrange(int $min, int $max): iterable
+{
+    $i = $min;
+
+    while ($i < $max) {
+        yield $i++;
+    }
+}
+
 function normalize360(int|float $angle): float
 {
     $angle = fmod($angle, 360);
@@ -22,7 +33,7 @@ function angleToVertex(Vector2 $from, Vector2 $to): float
     $dx = $to->x - $from->x;
     $dy = $to->y - $from->y;
 
-    return normalize360(atan2($dy, $dx) * 180 / pi());
+    return normalize360(atan2($dy, $dx) * 180 / PI);
 }
 
 function angleToScreenX(float $angle): int
@@ -35,14 +46,14 @@ function angleToScreenX(float $angle): int
     if ($angle > $halfScreenAngle) {
         $angle -= $halfScreenAngle;
         return (int) ($halfScreenWidth - round(
-                $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
+                $halfScreenWidth * tan($angle * PI / $fullScreenAngle)
             ));
     }
 
     // Right side
     $angle = $halfScreenAngle - $angle;
     return (int) ($halfScreenWidth + round(
-        $halfScreenWidth * tan($angle * pi() / $fullScreenAngle)
+        $halfScreenWidth * tan($angle * PI / $fullScreenAngle)
     ));
 }
 

@@ -5,7 +5,18 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Raylib\Raylib;
-use function Nawarian\Raylib\{InitWindow, IsKeyDown, IsKeyPressed, SetTargetFPS, WindowShouldClose};
+use Nawarian\Raylib\Types\Camera2D;
+use Nawarian\Raylib\Types\Vector2;
+use function Nawarian\Raylib\{
+    BeginDrawing,
+    EndDrawing,
+    GetMouseWheelMove,
+    InitWindow,
+    IsKeyDown,
+    IsKeyPressed,
+    SetTargetFPS,
+    WindowShouldClose
+};
 
 class Game
 {
@@ -13,11 +24,16 @@ class Game
     public const SCREEN_HEIGHT = 200 * 3.5;
 
     private GameState $state;
+    private AutomapRenderer $automapRenderer;
+    private SceneRenderer $sceneRenderer;
+
     private Renderer $renderer;
+    private Camera2D $camera;
 
     public function __construct(WAD $wad)
     {
         $this->state = new GameState($wad);
+        $this->renderer = new DebugRenderer($this->state);
     }
 
     public function start(): void
@@ -26,26 +42,32 @@ class Game
         SetTargetFPS(60);
         $this->switchGameMap('E1M1');
 
+        $this->camera = new Camera2D(new Vector2(0, 0), new Vector2(0, 0), 0.0, 1.0);
+
         while (false === WindowShouldClose()) {
             $this->update();
-            $this->renderer->render();
+            BeginDrawing();
+                $this->renderer->render($this->camera);
+            EndDrawing();
         }
     }
 
     private function switchGameMap(string $identifier): void
     {
         $this->state->setMap($identifier);
-        $this->renderer = new Renderer($this->state->map);
+        $this->automapRenderer = new AutomapRenderer($this->state);
+        $this->sceneRenderer = new SceneRenderer($this->state);
+        $this->renderer->innerRenderer = $this->sceneRenderer;
     }
 
     private function update(): void
     {
         if (IsKeyPressed(Raylib::KEY_TAB)) {
-            $this->renderer->toggleAutomap();
-        }
-
-        if (IsKeyPressed(Raylib::KEY_BACKSPACE)) {
-            $this->renderer->toggleDebug();
+            if ($this->renderer->innerRenderer === $this->sceneRenderer) {
+                $this->renderer->innerRenderer = $this->automapRenderer;
+            } else {
+                $this->renderer->innerRenderer = $this->sceneRenderer;
+            }
         }
 
         if (IsKeyDown(Raylib::KEY_RIGHT)) {
@@ -62,6 +84,27 @@ class Game
 
         if (IsKeyDown(Raylib::KEY_DOWN)) {
             $this->state->player->position->y -= 1;
+        }
+
+        $scroll = GetMouseWheelMove();
+        if (0.0 !== $scroll) {
+            $this->camera->zoom += $scroll / 10;
+        }
+
+        if (IsKeyDown(Raylib::KEY_W)) {
+            $this->camera->offset->y += 20;
+        }
+
+        if (IsKeyDown(Raylib::KEY_S)) {
+            $this->camera->offset->y -= 20;
+        }
+
+        if (IsKeyDown(Raylib::KEY_D)) {
+            $this->camera->offset->x -= 20;
+        }
+
+        if (IsKeyDown(Raylib::KEY_A)) {
+            $this->camera->offset->x += 20;
         }
     }
 }

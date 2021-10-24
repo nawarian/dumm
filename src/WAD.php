@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use PhpBinaryReader\{BinaryReader, Endian};
+use Nawarian\Dumm\WAD\Sector;
 use Nawarian\Raylib\Types\Vector2;
 
 class WAD
@@ -203,8 +204,8 @@ class WAD
         $sectorsSizeInBytes = 14; // int16 * 2 + char8 * 2 + uint16 * 3
         $sectors = [];
         for ($i = 0; $i < $size / $sectorsSizeInBytes; ++$i) {
-            $sectors[$i] = [
-                // Floor & Ceiling height
+            $sectors[$i] = new Sector(
+            // Floor & Ceiling height
                 $this->reader->readInt16(),
                 $this->reader->readInt16(),
 
@@ -213,12 +214,12 @@ class WAD
                 $this->reader->readString(8),
 
                 // LightLevel
-                $this->reader->readUInt16(),
+                (int) $this->reader->readUInt16(),
                 // Type
-                $this->reader->readUInt16(),
+                (int) $this->reader->readUInt16(),
                 // Tag
-                $this->reader->readUInt16(),
-            ];
+                (int) $this->reader->readUInt16(),
+            );
         }
 
         return $sectors;

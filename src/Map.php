@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Dumm\WAD\Linedef;
+use Nawarian\Dumm\WAD\Node;
+use Nawarian\Dumm\WAD\Sector;
+use Nawarian\Dumm\WAD\Segment;
+use Nawarian\Dumm\WAD\Sidedef;
+use Nawarian\Dumm\WAD\SubSector;
+use Nawarian\Raylib\Types\Rectangle;
 use Nawarian\Raylib\Types\Vector2;
 
 class Map
@@ -62,6 +69,9 @@ class Map
         return $player;
     }
 
+    /**
+     * @return array<Linedef>
+     */
     public function linedefs(): array 
     {
         if (isset($this->cache['linedefs'])) {
@@ -72,10 +82,38 @@ class Map
             $this->lumps[self::LINEDEFS_OFFSET],
         );
 
+        $linedefs = array_map(function (array $linedef) {
+            [
+                $startVertexId,
+                $endVertexId,
+                $flags,
+                $lineType,
+                $sectorTag,
+                $rightSidedefId,
+                $leftSidedefId,
+            ] = $linedef;
+
+            $rightSidedef = ($rightSidedefId !== 0xFFFF) ? $this->sidedefs()[$rightSidedefId] : null;
+            $leftSidedef = ($leftSidedefId !== 0xFFFF) ? $this->sidedefs()[$leftSidedefId] : null;
+
+            return new Linedef(
+                $this->vertices()[$startVertexId],
+                $this->vertices()[$endVertexId],
+                $flags,
+                $lineType,
+                $sectorTag,
+                $rightSidedef,
+                $leftSidedef,
+            );
+        }, $linedefs);
+
         $this->cache['linedefs'] = $linedefs;
         return $linedefs;
     }
 
+    /**
+     * @return array<Sidedef>
+     */
     public function sidedefs(): array
     {
         if (isset($this->cache['sidedefs'])) {
@@ -85,6 +123,25 @@ class Map
         $sidedefs = $this->wad->fetchSideDefs(
             $this->lumps[self::SIDEDEFS_OFFSET]
         );
+
+        $sidedefs = array_map(function (array $sidedef) {
+            [
+                $x,
+                $y,
+                $upperTexture,
+                $lowerTexture,
+                $midTexture,
+                $sectorId,
+            ] = $sidedef;
+
+            return new Sidedef(
+                new Vector2($x, $y),
+                $upperTexture,
+                $lowerTexture,
+                $midTexture,
+                $this->sectors()[$sectorId],
+            );
+        }, $sidedefs);
 
         $this->cache['sidedefs'] = $sidedefs;
         return $sidedefs;
@@ -104,6 +161,9 @@ class Map
         return $vertices; 
     }
 
+    /**
+     * @return array<Segment>
+     */
     public function segments(): array
     {
         if (isset($this->cache['segments'])) {
@@ -114,10 +174,33 @@ class Map
             $this->lumps[self::SEGS_OFFSET],
         );
 
+        $segments = array_map(function (array $segment) {
+            [
+                $startVertexId,
+                $endVertexId,
+                $angle,
+                $linedefId,
+                $direction,
+                $offset,
+            ] = $segment;
+
+            return new Segment(
+                $this->vertices()[$startVertexId],
+                $this->vertices()[$endVertexId],
+                $angle,
+                $this->linedefs()[$linedefId],
+                $direction,
+                $offset,
+            );
+        }, $segments);
+
         $this->cache['segments'] = $segments;
         return $segments;
     }
 
+    /**
+     * @return array<Sector>
+     */
     public function sectors(): array
     {
         if (isset($this->cache['sectors'])) {
@@ -132,6 +215,9 @@ class Map
         return $sectors;
     }
 
+    /**
+     * @return array<SubSector>
+     */
     public function subSectors(): array
     {
         if (isset($this->cache['subsectors'])) {
@@ -142,19 +228,78 @@ class Map
             $this->lumps[self::SSECTORS_OFFSET],
         );
 
+        $subSectors = array_map(function (array $subSector) {
+            [$segCount, $segId] = $subSector;
+            $segment = $this->segments()[$segId];
+
+            return new SubSector($segCount, $segId, $segment);
+        }, $subSectors);
+
         $this->cache['subsectors'] = $subSectors;
         return $subSectors;
     }
 
+    /**
+     * @return array<Node>
+     */
     public function nodes(): array 
     {
         if (isset($this->cache['nodes'])) {
             return $this->cache['nodes'];
         }
 
-        $nodes = $this->wad->fetchNodes(
+        $wadNodes = $this->wad->fetchNodes(
             $this->lumps[self::NODES_OFFSET],
         );
+
+        /** @var array<Node> $nodes */
+        $nodes = array_map(function (array $node) {
+            [
+                $partitionX,
+                $partitionY,
+                $partitionChangeX,
+                $partitionChangeY,
+
+                $rightRectY0,
+                $rightRectY1,
+                $rightRectX0,
+                $rightRectX1,
+
+                $leftRectY0,
+                $leftRectY1,
+                $leftRectX0,
+                $leftRectX1,
+
+                $rightChildId,
+                $leftChildId,
+            ] = $node;
+
+            return new Node(
+                new Vector2($partitionX, $partitionY),
+                new Vector2($partitionChangeX, $partitionChangeY),
+                new Rectangle(
+                    $rightRectX0,
+                    $rightRectY0,
+                    abs($rightRectX1 - $rightRectX0),
+                    abs($rightRectY1 - $rightRectY0)
+                ),
+                new Rectangle(
+                    $leftRectX0,
+                    $leftRectY0,
+                    abs($leftRectX1 - $leftRectX0),
+                    abs($leftRectY1 - $leftRectY0)
+                ),
+                null,
+                null,
+                $leftChildId,
+                $rightChildId,
+            );
+        }, $wadNodes);
+
+        foreach ($nodes as $node) {
+            $node->leftChild = $nodes[$node->leftChildId] ?? null;
+            $node->rightChild = $nodes[$node->rightChildId] ?? null;
+        }
 
         $this->cache['nodes'] = $nodes;
         return $nodes; 

@@ -16,6 +16,11 @@
         },
         "files": ["src/functions.php"]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Nawarian\\Dumm\\": "tests/"
+        }
+    },
     "require": {
         "php": "^8.0",
         "nawarian/raylib-ffi": "dev-main",
