@@ -20,8 +20,8 @@ use function Nawarian\Raylib\{
 
 class Game
 {
-    public const SCREEN_WIDTH = 320 * 3.5;
-    public const SCREEN_HEIGHT = 200 * 3.5;
+    public const SCREEN_WIDTH = 320;
+    public const SCREEN_HEIGHT = 200;
 
     private GameState $state;
     private AutomapRenderer $automapRenderer;
@@ -38,11 +38,11 @@ class Game
 
     public function start(): void
     {
-        InitWindow((int) self::SCREEN_WIDTH, (int) self::SCREEN_HEIGHT, 'DUMM - PHP DOOM');
+        InitWindow((int) (self::SCREEN_WIDTH * 3.5), (int) (self::SCREEN_HEIGHT * 3.5), 'DUMM - PHP DOOM');
         SetTargetFPS(60);
         $this->switchGameMap('E1M1');
 
-        $this->camera = new Camera2D(new Vector2(0, 0), new Vector2(0, 0), 0.0, 1.0);
+        $this->camera = new Camera2D(new Vector2(0, 0), new Vector2(0, 0), 0.0, 3.5);
 
         while (false === WindowShouldClose()) {
             $this->update();
