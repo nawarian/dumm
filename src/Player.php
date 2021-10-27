@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Raylib\Types\Vector2;
-use function Nawarian\Dumm\{
-    normalize360,
-    angleToVertex,
-};
 
 class Player extends Thing
 {
@@ -68,6 +64,9 @@ class Player extends Thing
 
     public function distanceToPoint(Vector2 $vertex): float
     {
-        return sqrt(pow($this->x - $vertex->x, 2) + pow($this->y - $vertex->y, 2));
+        return sqrt(
+            pow($this->position->x - $vertex->x, 2)
+            + pow($this->position->y - $vertex->y, 2)
+        );
     }
 }
