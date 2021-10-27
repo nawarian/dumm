@@ -14,6 +14,11 @@ final class SolidWallClipper
     /** @var SolidSegmentRange[] */
     private array $solidWallRanges = [];
 
+    public function __construct()
+    {
+        $this->reset();
+    }
+
     public function reset(): void
     {
         $this->solidWallRanges = [
