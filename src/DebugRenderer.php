@@ -9,6 +9,8 @@ use Nawarian\Raylib\Types\Color;
 use function Nawarian\Raylib\DrawFPS;
 use function Nawarian\Raylib\DrawText;
 use function Nawarian\Raylib\GetScreenHeight;
+use function Nawarian\Raylib\GetScreenWidth;
+use function Nawarian\Raylib\MeasureText;
 
 final class DebugRenderer implements Renderer
 {
@@ -37,6 +39,16 @@ final class DebugRenderer implements Renderer
         DrawText(
             $playerDebugMessage,
             0,
+            GetScreenHeight() - $this->fontSize,
+            $this->fontSize,
+            Color::darkGreen(),
+        );
+
+        $systemMessage = sprintf('Mem.: %d Kb', memory_get_usage(true) / 1024);
+        $systemMessageSize = MeasureText($systemMessage, $this->fontSize);
+        DrawText(
+            $systemMessage,
+            GetScreenWidth() - $systemMessageSize,
             GetScreenHeight() - $this->fontSize,
             $this->fontSize,
             Color::darkGreen(),
