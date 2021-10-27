@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Dumm\Renderer\{AutomapRenderer, DebugRenderer, Renderer, SceneRenderer};
 use Nawarian\Raylib\Raylib;
-use Nawarian\Raylib\Types\Camera2D;
-use Nawarian\Raylib\Types\Vector2;
+use Nawarian\Raylib\Types\{Camera2D, Vector2};
 use function Nawarian\Raylib\{
     BeginDrawing,
     EndDrawing,

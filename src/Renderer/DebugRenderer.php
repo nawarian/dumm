@@ -2,15 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
-use Nawarian\Raylib\Types\Camera2D;
-use Nawarian\Raylib\Types\Color;
-use function Nawarian\Raylib\DrawFPS;
-use function Nawarian\Raylib\DrawText;
-use function Nawarian\Raylib\GetScreenHeight;
-use function Nawarian\Raylib\GetScreenWidth;
-use function Nawarian\Raylib\MeasureText;
+use Nawarian\Dumm\GameState;
+use Nawarian\Raylib\Types\{Camera2D, Color};
+use function Nawarian\Raylib\{DrawFPS, DrawText, GetScreenHeight, GetScreenWidth, MeasureText};
 
 final class DebugRenderer implements Renderer
 {

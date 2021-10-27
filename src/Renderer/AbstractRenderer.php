@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
+use Nawarian\Dumm\GameState;
 use Nawarian\Dumm\WAD\Segment;
+use function Nawarian\Dumm\xrange;
 
 abstract class AbstractRenderer implements Renderer
 {
@@ -52,8 +54,8 @@ abstract class AbstractRenderer implements Renderer
         $dy = $this->state->player->position->y - $node->partition->y;
 
         $isOnLeftSide = (
-                ($dx * $node->partitionChange->y) - ($dy * $node->partitionChange->x)
-            ) <= 0;
+            ($dx * $node->partitionChange->y) - ($dy * $node->partitionChange->x)
+        ) <= 0;
 
         if (true === $isOnLeftSide) {
             $this->traverseBSPNodes($nodes[$nodeId]->leftChildId);

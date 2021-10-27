@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
-use Nawarian\Dumm\WAD\Segment;
-use Nawarian\Raylib\Types\Camera2D;
-use Nawarian\Raylib\Types\Color;
-use function Nawarian\Raylib\{BeginMode2D, ClearBackground, DrawLine, DrawRectangle, EndMode2D};
+use Nawarian\Dumm\{Game, GameState, SolidSegmentData, SolidWallClipper, WAD\Segment};
+use Nawarian\Raylib\Types\{Camera2D, Color};
+use function Nawarian\Raylib\{BeginMode2D, ClearBackground, DrawLine, EndMode2D};
+use function Nawarian\Dumm\{normalize360, xrange};
+use const Nawarian\Dumm\PI;
 
 final class SceneRenderer extends AbstractRenderer
 {

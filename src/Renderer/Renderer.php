@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
 use Nawarian\Raylib\Types\Camera2D;
 
