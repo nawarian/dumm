@@ -11,7 +11,7 @@ A php port of the 1993's DOOM based on [Amro Ibrahim's DIYDoom](https://github.c
 
 # Running the project
 
-Make sure you've placed `DOOM1.wad` and `raylib.so` in the root path.
+Make sure you've placed `DOOM1.wad` in the root path.
 
 ```
 $ ./doom
@@ -20,7 +20,9 @@ $ ./doom
 # Current State
 ![Rendering automap + root node](dumm-demo.gif)
 
-The screen shows a default spacing taken for Ceiling and Floor.
+The above demo shows how 2D and 3D rendering of the map currently works.
+
+Textures aren't yet being applied.
 
 Every solid object has a texture (from WAD definitions) and
 such definitions set a texture name. For each texture name
@@ -35,7 +37,7 @@ appear with the same colors on the screen.
 - [x] Render scene lines
 - [x] Clip solid walls
 - [x] Render scene rectangles
-- [ ] Add perspective
+- [x] Add perspective
 - [ ] Draw floor and ceiling
 - [ ] Draw textures
 - [ ] Move around
