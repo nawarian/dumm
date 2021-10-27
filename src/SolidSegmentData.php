@@ -8,6 +8,6 @@ use Nawarian\Dumm\WAD\Segment;
 
 final class SolidSegmentData
 {
-    public function __construct(public Segment $segment, public int $v1Xscreen, public int $v2XScreen)
+    public function __construct(public Segment $segment, public int $v1XScreen, public int $v2XScreen)
     {}
 }
