@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm;
 
+use Nawarian\Dumm\WAD\{Map, Player, WAD};
+
 class GameState
 {
     private WAD $wad;
@@ -23,4 +25,3 @@ class GameState
         $this->player = $this->map->fetchPlayer(1);
     }
 }
-

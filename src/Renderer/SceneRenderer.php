@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nawarian\Dumm\Renderer;
 
-use Nawarian\Dumm\{Game, GameState, SolidSegmentData, SolidWallClipper, WAD\Segment};
+use Nawarian\Dumm\{Game, GameState, WAD\Segment};
 use Nawarian\Raylib\Types\{Camera2D, Color};
 use function Nawarian\Raylib\{BeginMode2D, ClearBackground, DrawLine, EndMode2D};
 use function Nawarian\Dumm\{normalize360, xrange};

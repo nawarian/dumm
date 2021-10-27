@@ -2,14 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\WAD;
 
-use Nawarian\Dumm\WAD\Linedef;
-use Nawarian\Dumm\WAD\Node;
-use Nawarian\Dumm\WAD\Sector;
-use Nawarian\Dumm\WAD\Segment;
-use Nawarian\Dumm\WAD\Sidedef;
-use Nawarian\Dumm\WAD\SubSector;
 use Nawarian\Raylib\Types\Rectangle;
 use Nawarian\Raylib\Types\Vector2;
 

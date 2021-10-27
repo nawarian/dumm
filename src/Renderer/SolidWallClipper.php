@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
-use Nawarian\Dumm\WAD\Segment;
+use Nawarian\Dumm\{Game, WAD\Segment};
 use OutOfRangeException;
 use SplDoublyLinkedList;
 use SplQueue;
+use function Nawarian\Dumm\xrange;
 
 final class SolidWallClipper
 {

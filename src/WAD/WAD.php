@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\WAD;
 
 use PhpBinaryReader\{BinaryReader, Endian};
+use Nawarian\Dumm\WAD\Map;
 use Nawarian\Dumm\WAD\Sector;
 use Nawarian\Raylib\Types\Vector2;
 
@@ -270,4 +271,3 @@ class WAD
         return $segments;
     }
 }
-

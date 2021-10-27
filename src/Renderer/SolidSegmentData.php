@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\Renderer;
 
 use Nawarian\Dumm\WAD\Segment;
 

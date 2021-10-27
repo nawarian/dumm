@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\WAD;
 
 use Nawarian\Raylib\Types\Vector2;
 
@@ -15,4 +15,3 @@ class Thing
         public int $flags,
     ) {}
 }
-

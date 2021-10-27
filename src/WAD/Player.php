@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Nawarian\Dumm;
+namespace Nawarian\Dumm\WAD;
 
 use Nawarian\Raylib\Types\Vector2;
+use function Nawarian\Dumm\{angleToVertex, normalize360};
 
 class Player extends Thing
 {
