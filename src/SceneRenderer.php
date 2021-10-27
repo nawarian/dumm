@@ -16,12 +16,14 @@ use function Nawarian\Raylib\{
 
 final class SceneRenderer extends AbstractRenderer
 {
-    /** @var SolidSegmentRange[] */
-    private array $solidWallRanges = [];
-
-    private array $screenXToAngle = [];
     private array $colors = [];
-    private float $distancePlayerToScreen;
+
+    public function __construct(
+        private SolidWallClipper $solidWallClipper,
+        GameState $state,
+    ) {
+        parent::__construct($state);
+    }
 
     public function render(Camera2D $camera): void
     {
@@ -33,11 +35,20 @@ final class SceneRenderer extends AbstractRenderer
             'COMPTILE' => Color::lime(),
         ];
 
-        $this->init();
+        $this->solidWallClipper->reset();
+        $this->update();
 
         ClearBackground(Color::black());
         BeginMode2D($camera);
-            $this->update();
+            foreach ($this->solidWallClipper->visibleWalls as $visibleWall) {
+                DrawRectangle(
+                    $visibleWall->v1Xscreen,
+                    0,
+                    abs($visibleWall->v2XScreen - $visibleWall->v1Xscreen) + 1,
+                    Game::SCREEN_HEIGHT,
+                    $this->getWallColor($visibleWall->segment->linedef->rightSidedef->midTexture),
+                );
+            }
         EndMode2D();
     }
 
@@ -59,99 +70,8 @@ final class SceneRenderer extends AbstractRenderer
                 return;
             }
 
-            $this->clipSolidWalls($segment, $v1XScreen, $v2XScreen);
+            $this->solidWallClipper->registerVisibleWallPortion($segment, $v1XScreen, $v2XScreen);
         }
-    }
-
-    private function clipSolidWalls(Segment $segment, int $v1XScreen, int $v2XScreen): void
-    {
-        $currentWall = new SolidSegmentRange($v1XScreen, $v2XScreen);
-        $i = 0;
-
-        while (
-            $this->solidWallRanges[$i] !== $this->solidWallRanges[count($this->solidWallRanges) - 1]
-            && $this->solidWallRanges[$i]->xEnd < $currentWall->xStart - 1
-        ) {
-            $i++;
-        }
-
-        if ($currentWall->xStart < $this->solidWallRanges[$i]->xStart) {
-            if ($currentWall->xEnd < $this->solidWallRanges[$i]->xStart - 1) {
-                // Wall is entirely visible, insert it
-                $this->insertSolidSegmentRange($i, $currentWall);
-                $this->storeWallRange($segment, $currentWall->xStart, $currentWall->xEnd);
-
-                return;
-            }
-            $this->storeWallRange($segment, $currentWall->xStart, $this->solidWallRanges[$i]->xStart - 1);
-
-            // The end is already included, just update start
-            $this->solidWallRanges[$i]->xStart = $currentWall->xStart;
-        }
-
-        // This part is already occupied
-        if ($currentWall->xEnd <= $this->solidWallRanges[$i]->xEnd) {
-            return;
-        }
-
-        $j = $i;
-        while ($currentWall->xEnd >= ($this->solidWallRanges[$j + 1]->xStart - 1)) {
-            // partially clipped by other walls, store each fragment
-            $this->storeWallRange(
-                $segment,
-                $this->solidWallRanges[$j]->xEnd + 1,
-                $this->solidWallRanges[$j + 1]->xStart - 1
-            );
-            ++$j;
-
-            if ($currentWall->xEnd <= $this->solidWallRanges[$j]->xEnd) {
-                $this->solidWallRanges[$i]->xEnd = $this->solidWallRanges[$j]->xEnd;
-
-                if ($this->solidWallRanges[$i] !== $this->solidWallRanges[$j]) {
-                    // Delete a range of walls
-                    ++$i;
-                    ++$j;
-                    $this->eraseSolidWallRanges($i, $j);
-                }
-                return;
-            }
-        }
-
-        $this->storeWallRange($segment, $this->solidWallRanges[$j]->xEnd + 1, $currentWall->xEnd);
-        $this->solidWallRanges[$i]->xEnd = $currentWall->xEnd;
-
-        if ($this->solidWallRanges[$i] !== $this->solidWallRanges[$j]) {
-            ++$i;
-            ++$j;
-            $this->eraseSolidWallRanges($i, $j);
-        }
-    }
-
-    private function storeWallRange(Segment $segment, int $v1XScreen, int $v2XScreen): void
-    {
-        DrawRectangle(
-            $v1XScreen,
-            0,
-            $v2XScreen - $v1XScreen + 1,
-            Game::SCREEN_HEIGHT,
-            $this->getWallColor($segment->linedef->rightSidedef->midTexture),
-        );
-    }
-
-    private function insertSolidSegmentRange(int $i, SolidSegmentRange $range): void
-    {
-        $firstSlice = array_slice($this->solidWallRanges, 0, $i);
-        $secondSlice = array_slice($this->solidWallRanges, $i);
-
-        $this->solidWallRanges = [...$firstSlice, $range, ...$secondSlice];
-    }
-
-    private function eraseSolidWallRanges(int $from, int $to): void
-    {
-        $firstSlice = array_slice($this->solidWallRanges, 0, $from);
-        $secondSlice = array_slice($this->solidWallRanges, $to);
-
-        $this->solidWallRanges = [...$firstSlice, ...$secondSlice];
     }
 
     private function getWallColor(string $textureName): Color
@@ -171,41 +91,16 @@ final class SceneRenderer extends AbstractRenderer
     private function angleToScreen(float $angle): int
     {
         $halScreenWidth = Game::SCREEN_WIDTH / 2;
-        $iX = 0;
+        $playerHeight = 160;
 
         // Left side
         if ($angle > 90) {
-            $angle -= 90;
-            $angle = normalize360($angle);
-            $iX = $halScreenWidth - round(tan($angle * PI / 180.0) * $halScreenWidth);
-        } else {
-            // Right side
-            $angle = 90 - $angle;
-            $angle = normalize360($angle);
-            $iX = round(tan($angle * PI / 180.0) * $halScreenWidth);
-            $iX += $halScreenWidth;
+            $angle = normalize360($angle - 90);
+            return (int) ($playerHeight - round(tan($angle * PI / 180.0) * $playerHeight));
         }
 
-        return (int) $iX;
-    }
-
-    private function init(): void
-    {
-        // Update angle map
-        $this->screenXToAngle = [];
-        $screenAngle = normalize360($this->state->player->fov / 2);
-        $step = $this->state->player->fov / Game::SCREEN_WIDTH + 1;
-        foreach (xrange(0, (int)Game::SCREEN_WIDTH) as $i) {
-            $this->screenXToAngle[$i] = $screenAngle;
-            $screenAngle -= $step;
-            $screenAngle = normalize360($screenAngle);
-        }
-        $this->distancePlayerToScreen = (Game::SCREEN_WIDTH / 2) / tan($this->state->player->fov / 2);
-
-        // Update walls in FoV
-        $this->solidWallRanges = [
-            new SolidSegmentRange(PHP_INT_MIN, -1),
-            new SolidSegmentRange((int) Game::SCREEN_WIDTH, PHP_INT_MAX),
-        ];
+        // Right side
+        $angle = normalize360(90 - $angle);
+        return (int) (round(tan($angle * PI / 180.0) * $playerHeight) + $playerHeight);
     }
 }

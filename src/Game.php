@@ -56,7 +56,7 @@ class Game
     {
         $this->state->setMap($identifier);
         $this->automapRenderer = new AutomapRenderer($this->state);
-        $this->sceneRenderer = new SceneRenderer($this->state);
+        $this->sceneRenderer = new SceneRenderer(new SolidWallClipper(), $this->state);
         $this->renderer->innerRenderer = $this->sceneRenderer;
     }
 
