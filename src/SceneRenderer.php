@@ -19,9 +19,6 @@ final class SceneRenderer extends AbstractRenderer
     /** @var SolidSegmentRange[] */
     private array $solidWallRanges = [];
 
-    /** @var SolidSegmentData[] */
-    private array $solidSegmentData = [];
-
     private array $screenXToAngle = [];
     private array $colors = [];
     private float $distancePlayerToScreen;
@@ -37,24 +34,10 @@ final class SceneRenderer extends AbstractRenderer
         ];
 
         $this->init();
-        $this->update();
 
         ClearBackground(Color::black());
         BeginMode2D($camera);
-
-        foreach ($this->solidSegmentData as $wall) {
-            $ceilingHeight = (int) (Game::SCREEN_HEIGHT * 0.1);
-            $floorHeight = (int) (Game::SCREEN_HEIGHT * 0.2);
-
-            DrawRectangle(
-                $wall->v1Xscreen,
-                $ceilingHeight,
-                $wall->v2XScreen - $wall->v1Xscreen + 1,
-                Game::SCREEN_HEIGHT - $floorHeight,
-                $this->getWallColor($wall),
-            );
-        }
-
+            $this->update();
         EndMode2D();
     }
 
@@ -146,7 +129,13 @@ final class SceneRenderer extends AbstractRenderer
 
     private function storeWallRange(Segment $segment, int $v1XScreen, int $v2XScreen): void
     {
-        $this->solidSegmentData[] = new SolidSegmentData($segment, $v1XScreen, $v2XScreen);
+        DrawRectangle(
+            $v1XScreen,
+            0,
+            $v2XScreen - $v1XScreen + 1,
+            Game::SCREEN_HEIGHT,
+            $this->getWallColor($segment->linedef->rightSidedef->midTexture),
+        );
     }
 
     private function insertSolidSegmentRange(int $i, SolidSegmentRange $range): void
@@ -165,9 +154,9 @@ final class SceneRenderer extends AbstractRenderer
         $this->solidWallRanges = [...$firstSlice, ...$secondSlice];
     }
 
-    private function getWallColor(SolidSegmentData $segmentData): Color
+    private function getWallColor(string $textureName): Color
     {
-        $textureName = trim($segmentData->segment->linedef->rightSidedef->midTexture);
+        $textureName = trim($textureName);
 
         $this->colors[$textureName] = $this->colors[$textureName] ?? new Color(
             rand(0, 255),
@@ -218,6 +207,5 @@ final class SceneRenderer extends AbstractRenderer
             new SolidSegmentRange(PHP_INT_MIN, -1),
             new SolidSegmentRange((int) Game::SCREEN_WIDTH, PHP_INT_MAX),
         ];
-        $this->solidSegmentData = [];
     }
 }
