@@ -52,15 +52,15 @@ abstract class AbstractRenderer implements Renderer
         $dy = $this->state->player->position->y - $node->partition->y;
 
         $isOnLeftSide = (
-            ($dx * $node->partitionChange->y) - ($dy * $node->partitionChange->y)
-        ) <= 0;
+                ($dx * $node->partitionChange->y) - ($dy * $node->partitionChange->x)
+            ) <= 0;
 
         if (true === $isOnLeftSide) {
-            $this->traverseBSPNodes($nodes[$nodeId]->rightChildId);
             $this->traverseBSPNodes($nodes[$nodeId]->leftChildId);
+            $this->traverseBSPNodes($nodes[$nodeId]->rightChildId);
         } else {
-            $this->traverseBSPNodes($nodes[$nodeId]->leftChildId);
             $this->traverseBSPNodes($nodes[$nodeId]->rightChildId);
+            $this->traverseBSPNodes($nodes[$nodeId]->leftChildId);
         }
     }
 }
