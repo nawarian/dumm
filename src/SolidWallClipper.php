@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Nawarian\Dumm;
 
 use Nawarian\Dumm\WAD\Segment;
+use OutOfRangeException;
 use SplDoublyLinkedList;
-use SplStack;
+use SplQueue;
 
 final class SolidWallClipper
 {
-    /** @var SplStack<SolidSegmentData> */
-    public SplStack $visibleWalls;
+    /** @var SplQueue<SolidSegmentData> */
+    public SplQueue $visibleWalls;
 
     /** @var SplDoublyLinkedList<SolidSegmentRange>  */
     private SplDoublyLinkedList $solidSegmentRanges;
@@ -27,7 +28,7 @@ final class SolidWallClipper
         $this->solidSegmentRanges->push(new SolidSegmentRange(PHP_INT_MIN, -1));
         $this->solidSegmentRanges->push(new SolidSegmentRange((int) Game::SCREEN_WIDTH, PHP_INT_MAX));
 
-        $this->visibleWalls = new SplStack();
+        $this->visibleWalls = new SplQueue();
     }
 
     public function registerVisibleWallPortion(Segment $segment, int $v1XScreen, int $v2XScreen): void
@@ -65,7 +66,7 @@ final class SolidWallClipper
         $nextWall = null;
         try {
             $nextWall = $this->solidSegmentRanges[$j + 1];
-        } catch (\OutOfRangeException $e) {}
+        } catch (OutOfRangeException $e) {}
         while ($nextWall && $currentWall->xEnd >= ($nextWall->xStart - 1)) {
             // partially clipped by other walls, store each fragment
             $this->storeWallRange(
@@ -90,7 +91,7 @@ final class SolidWallClipper
 
             try {
                 $nextWall = $this->solidSegmentRanges[$j + 1];
-            } catch (\OutOfRangeException $e) {
+            } catch (OutOfRangeException $e) {
                 break;
             }
         }

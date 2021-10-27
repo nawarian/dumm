@@ -10,7 +10,7 @@ use Nawarian\Dumm\WAD\Linedef;
 use Nawarian\Dumm\WAD\Segment;
 use Nawarian\Raylib\Types\Vector2;
 use PHPUnit\Framework\TestCase;
-use SplStack;
+use SplQueue;
 
 class SolidWallClipperTest extends TestCase
 {
@@ -52,7 +52,7 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 180, 220);
 
         self::assertEquals(
-            $this->craftStackFromArray([
+            $this->craftQueueFromArray([
                 new SolidSegmentData($segment, 100, 200),
                 new SolidSegmentData($segment, 50, 99),
                 new SolidSegmentData($segment, 201, 220),
@@ -71,7 +71,7 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 25, 100);
 
         self::assertEquals(
-            $this->craftStackFromArray([
+            $this->craftQueueFromArray([
                 new SolidSegmentData($segment, 50, 80),
                 new SolidSegmentData($segment, 25, 49),
                 new SolidSegmentData($segment, 81, 100),
@@ -88,7 +88,7 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 200, 400);
 
         self::assertEquals(
-            $this->craftStackFromArray([
+            $this->craftQueueFromArray([
                 new SolidSegmentData($segment, 0, 100),
                 new SolidSegmentData($segment, 200, 319),
             ]),
@@ -116,9 +116,9 @@ class SolidWallClipperTest extends TestCase
         );
     }
 
-    private function craftStackFromArray(array $input): SplStack
+    private function craftQueueFromArray(array $input): SplQueue
     {
-        $stack = new SplStack();
+        $stack = new SplQueue();
 
         foreach ($input as $item) {
             $stack->push($item);

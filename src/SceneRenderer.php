@@ -43,7 +43,7 @@ final class SceneRenderer extends AbstractRenderer
             /** @var SolidSegmentData $visibleWall */
             while (
                 !$this->solidWallClipper->visibleWalls->isEmpty()
-                && $visibleWall = $this->solidWallClipper->visibleWalls->pop()
+                && $visibleWall = $this->solidWallClipper->visibleWalls->dequeue()
             ) {
                 DrawRectangle(
                     $visibleWall->v1Xscreen,
