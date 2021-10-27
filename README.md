@@ -18,7 +18,7 @@ $ ./doom
 ```
 
 # Current State
-![Rendering automap + root node](current-state.png)
+![Rendering automap + root node](dumm-demo.gif)
 
 The screen shows a default spacing taken for Ceiling and Floor.
 
@@ -34,7 +34,7 @@ appear with the same colors on the screen.
 - [x] Traverse BSP tree
 - [x] Render scene lines
 - [x] Clip solid walls
-- [ ] Render scene rectangles
+- [x] Render scene rectangles
 - [ ] Add perspective
 - [ ] Draw floor and ceiling
 - [ ] Draw textures
