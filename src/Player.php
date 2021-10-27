@@ -9,6 +9,7 @@ use Nawarian\Raylib\Types\Vector2;
 class Player extends Thing
 {
     public int $fov = 90;
+    public int $z = 41;
     private float $rotationSpeed = 10;
 
     // I hate receiving by ref, I'll soon refactor

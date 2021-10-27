@@ -7,22 +7,35 @@ namespace Nawarian\Dumm;
 use Nawarian\Dumm\WAD\Segment;
 use Nawarian\Raylib\Types\Camera2D;
 use Nawarian\Raylib\Types\Color;
-use function Nawarian\Raylib\{
-    BeginMode2D,
-    ClearBackground,
-    DrawRectangle,
-    EndMode2D
-};
+use function Nawarian\Raylib\{BeginMode2D, ClearBackground, DrawLine, DrawRectangle, EndMode2D};
 
 final class SceneRenderer extends AbstractRenderer
 {
+    private array $screenXToAngle = [];
     private array $colors = [];
+    private float $distancePlayerToScreen = 0.0;
 
     public function __construct(
         private SolidWallClipper $solidWallClipper,
         GameState $state,
     ) {
         parent::__construct($state);
+    }
+
+    private function init(): void
+    {
+        $this->screenXToAngle = [];
+        $this->solidWallClipper->reset();
+
+        $halfScreenWidth = Game::SCREEN_WIDTH / 2;
+        $halfFOV = $this->state->player->fov / 2;
+        $this->distancePlayerToScreen = $halfScreenWidth / tan($halfFOV);
+
+        foreach (xrange(0, Game::SCREEN_WIDTH) as $i) {
+            $this->screenXToAngle[$i] = atan(
+                ($halfScreenWidth - $i) / ($this->distancePlayerToScreen * 180 / PI)
+            );
+        }
     }
 
     public function render(Camera2D $camera): void
@@ -35,7 +48,8 @@ final class SceneRenderer extends AbstractRenderer
             'COMPTILE' => Color::lime(),
         ];
 
-        $this->solidWallClipper->reset();
+        $this->init();
+
         $this->update();
 
         ClearBackground(Color::black());
@@ -45,15 +59,105 @@ final class SceneRenderer extends AbstractRenderer
                 !$this->solidWallClipper->visibleWalls->isEmpty()
                 && $visibleWall = $this->solidWallClipper->visibleWalls->dequeue()
             ) {
-                DrawRectangle(
-                    $visibleWall->v1Xscreen,
-                    0,
-                    abs($visibleWall->v2XScreen - $visibleWall->v1Xscreen) + 1,
-                    Game::SCREEN_HEIGHT,
-                    $this->getWallColor($visibleWall->segment->linedef->rightSidedef->midTexture),
-                );
+                $this->drawSolidSegment($visibleWall);
             }
         EndMode2D();
+    }
+
+    private function drawSolidSegment(SolidSegmentData $visibleWall): void
+    {
+        $distanceToV1 = $this->state->player->distanceToPoint($visibleWall->segment->startVertex);
+        $distanceToV2 = $this->state->player->distanceToPoint($visibleWall->segment->endVertex);
+
+        if ($visibleWall->v1XScreen <= 0) {
+            // partial seg
+        }
+
+        if ($visibleWall->v2XScreen >= Game::SCREEN_WIDTH - 1) {
+            // partial seg
+        }
+
+        $ceilingV1OnScreen = 0;
+        $floorV1OnScreen = 0;
+        $ceilingV2OnScreen = 0;
+        $floorV2OnScreen = 0;
+
+        $this->calculateCeilingFloorHeight(
+            $visibleWall->segment,
+            $visibleWall->v1XScreen,
+            $distanceToV1,
+            $ceilingV1OnScreen,
+            $floorV1OnScreen,
+        );
+        $this->calculateCeilingFloorHeight(
+            $visibleWall->segment,
+            $visibleWall->v2XScreen,
+            $distanceToV2,
+            $ceilingV2OnScreen,
+            $floorV2OnScreen,
+        );
+
+        $color = $this->getWallColor($visibleWall->segment->linedef->rightSidedef->midTexture);
+        DrawLine(
+            (int) $visibleWall->v1XScreen,
+            (int) $ceilingV1OnScreen,
+            (int) $visibleWall->v1XScreen,
+            (int) $floorV1OnScreen,
+            $color,
+        );
+        DrawLine(
+            (int) $visibleWall->v2XScreen,
+            (int) $ceilingV2OnScreen,
+            (int) $visibleWall->v2XScreen,
+            (int) $floorV2OnScreen,
+            $color,
+        );
+        DrawLine(
+            (int) $visibleWall->v1XScreen,
+            (int) $ceilingV1OnScreen,
+            (int) $visibleWall->v2XScreen,
+            (int) $ceilingV2OnScreen,
+            $color,
+        );
+        DrawLine(
+            (int) $visibleWall->v1XScreen,
+            (int) $floorV1OnScreen,
+            (int) $visibleWall->v2XScreen,
+            (int) $floorV2OnScreen,
+            $color
+        );
+    }
+
+    private function calculateCeilingFloorHeight(
+        Segment $segment,
+        int $VXScreen,
+        float $distanceToV,
+        float &$ceilingVOnScreen,
+        float &$floorVOnScreen,
+    ): void {
+        $halfScreenHeight = Game::SCREEN_HEIGHT / 2;
+
+        $ceiling = $segment->linedef->rightSidedef->sector->ceilingHeight - $this->state->player->z;
+        $floor = $segment->linedef->rightSidedef->sector->floorHeight - $this->state->player->z;
+
+        $vScreenAngle = $this->screenXToAngle[$VXScreen];
+
+        $distanceToVScreen = $this->distancePlayerToScreen / cos($vScreenAngle);
+
+        $ceilingVOnScreen = (abs($ceiling) * $distanceToVScreen) / $distanceToV;
+        $floorVOnScreen = (abs($floor) * $distanceToVScreen) / $distanceToV;
+
+        if ($ceiling > 0) {
+            $ceilingVOnScreen = $halfScreenHeight - $ceilingVOnScreen;
+        } else {
+            $ceilingVOnScreen += $halfScreenHeight;
+        }
+
+        if ($floor > 0) {
+            $floorVOnScreen = $halfScreenHeight - $floorVOnScreen;
+        } else {
+            $floorVOnScreen += $halfScreenHeight;
+        }
     }
 
     protected function handleSegmentFound(Segment $segment): void
