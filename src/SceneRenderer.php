@@ -40,7 +40,11 @@ final class SceneRenderer extends AbstractRenderer
 
         ClearBackground(Color::black());
         BeginMode2D($camera);
-            foreach ($this->solidWallClipper->visibleWalls as $visibleWall) {
+            /** @var SolidSegmentData $visibleWall */
+            while (
+                !$this->solidWallClipper->visibleWalls->isEmpty()
+                && $visibleWall = $this->solidWallClipper->visibleWalls->pop()
+            ) {
                 DrawRectangle(
                     $visibleWall->v1Xscreen,
                     0,

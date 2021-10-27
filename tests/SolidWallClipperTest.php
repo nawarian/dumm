@@ -10,6 +10,7 @@ use Nawarian\Dumm\WAD\Linedef;
 use Nawarian\Dumm\WAD\Segment;
 use Nawarian\Raylib\Types\Vector2;
 use PHPUnit\Framework\TestCase;
+use SplStack;
 
 class SolidWallClipperTest extends TestCase
 {
@@ -32,8 +33,10 @@ class SolidWallClipperTest extends TestCase
 
         self::assertEquals(
             new SolidSegmentData($segment, 100, 200),
-            $this->clipper->visibleWalls[0],
+            $this->clipper->visibleWalls->pop(),
         );
+
+        self::assertEmpty($this->clipper->visibleWalls);
     }
 
     public function testPartiallyVisibleSegment(): void
@@ -49,11 +52,11 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 180, 220);
 
         self::assertEquals(
-            [
+            $this->craftStackFromArray([
                 new SolidSegmentData($segment, 100, 200),
                 new SolidSegmentData($segment, 50, 99),
                 new SolidSegmentData($segment, 201, 220),
-            ],
+            ]),
             $this->clipper->visibleWalls,
         );
     }
@@ -68,11 +71,11 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 25, 100);
 
         self::assertEquals(
-            [
+            $this->craftStackFromArray([
                 new SolidSegmentData($segment, 50, 80),
                 new SolidSegmentData($segment, 25, 49),
                 new SolidSegmentData($segment, 81, 100),
-            ],
+            ]),
             $this->clipper->visibleWalls,
         );
     }
@@ -85,10 +88,10 @@ class SolidWallClipperTest extends TestCase
         $this->clipper->registerVisibleWallPortion($segment, 200, 400);
 
         self::assertEquals(
-            [
+            $this->craftStackFromArray([
                 new SolidSegmentData($segment, 0, 100),
                 new SolidSegmentData($segment, 200, 319),
-            ],
+            ]),
             $this->clipper->visibleWalls,
         );
     }
@@ -111,5 +114,16 @@ class SolidWallClipperTest extends TestCase
             0,
             0,
         );
+    }
+
+    private function craftStackFromArray(array $input): SplStack
+    {
+        $stack = new SplStack();
+
+        foreach ($input as $item) {
+            $stack->push($item);
+        }
+
+        return $stack;
     }
 }
